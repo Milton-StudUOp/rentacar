@@ -62,7 +62,7 @@ read -p "Popular base de dados? (y/n): " SKIP_SEED
 
 if [ "$SKIP_SEED" == "y" ]; then
     echo "🌱 A popular base de dados inicial (Seed)..."
-    npm run prisma:seed
+    #npm run prisma:seed
 else
     echo "⏩ Seed ignorado. A sua base de dados manteve-se intacta."
 fi

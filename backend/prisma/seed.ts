@@ -242,8 +242,6 @@ async function main() {
     console.log('✅ Transfer services created');
 
     console.log('\n🎉 Seed complete!');
-    console.log('📧 Admin: admin@rentacar.co.mz / admin123');
-    console.log('📧 Client: joao@email.com / cliente123');
 }
 
 main()

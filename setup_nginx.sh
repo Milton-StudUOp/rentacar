@@ -55,8 +55,8 @@ server {
     }
 
     # 🖼️ Uploads de Imagens e Diretórios Estáticos (Servidos nativamente pelo Nginx)
-    location /uploads {
-        alias \$(pwd)/backend/uploads;
+    location /uploads/ {
+        alias $(pwd)/backend/uploads/;
         autoindex off;
         access_log off;
         expires max;

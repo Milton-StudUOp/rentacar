@@ -36,6 +36,9 @@ echo -e "\n${YELLOW}[2/5] Configurando Variáveis de Ambiente (.env)...${NC}"
     if [ -n "$DB_PASS" ]; then
         sed -i "s/mysql:\/\/root:@localhost/mysql:\/\/root:${DB_PASS}@localhost/g" backend/.env
         echo "Password conectada ao Prisma via backend/.env!"
+    else
+        echo "A configurar Prisma para usar Unix Socket (Root sem password)..."
+        sed -i "s/mysql:\/\/root:@localhost:3306\/rentacar/mysql:\/\/root@localhost\/rentacar?socket=\/var\/run\/mysqld\/mysqld.sock/g" backend/.env
     fi
 
     echo "A criar frontend/.env a partir do .env.example..."

@@ -56,8 +56,16 @@ echo "🚀 A executar Sincronização da Base de Dados (Criando esquemas)..."
 # 'db push' forces the schema safely directly from schema.prisma bypassing migration foreign key clashes
 npx prisma db push --accept-data-loss
 
-echo "🌱 A popular base de dados inicial (Seed)..."
-npm run prisma:seed
+echo -e "\n${YELLOW}Gostaria de popular a Base de Dados com dados iniciais? (Admin, Veículos de demo, Regiões)${NC}"
+echo -e "Atenção: Se já tiver dados Reais, escolha 'n' para não criar viaturas/utilizadores duplicados."
+read -p "Popular base de dados? (y/n): " SKIP_SEED
+
+if [ "$SKIP_SEED" == "y" ]; then
+    echo "🌱 A popular base de dados inicial (Seed)..."
+    npm run prisma:seed
+else
+    echo "⏩ Seed ignorado. A sua base de dados manteve-se intacta."
+fi
 
 echo "🏗️ A compilar o Backend para Produção (Pode demorar uns instantes)..."
 npm run build || true

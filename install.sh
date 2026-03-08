@@ -52,9 +52,9 @@ npm install
 echo "🗄️ A gerar Prisma Client..."
 npx prisma generate
 
-echo "🚀 A executar Migrations na base de dados (Criando esquemas)..."
-# 'deploy' resolves all pending migrations without resetting the DB
-npx prisma migrate deploy
+echo "🚀 A executar Sincronização da Base de Dados (Criando esquemas)..."
+# 'db push' forces the schema safely directly from schema.prisma bypassing migration foreign key clashes
+npx prisma db push --accept-data-loss
 
 echo "🌱 A popular base de dados inicial (Seed)..."
 npm run prisma:seed

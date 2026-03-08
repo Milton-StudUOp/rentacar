@@ -39,6 +39,9 @@ server {
     listen 80;
     server_name ${SERVER_NAME};
 
+    # ⬆️ Permitir Uploads Grandes (ex: fotos de viaturas, comprovativos)
+    client_max_body_size 50M;
+
     # 🚀 Frontend SPA Application
     location / {
         proxy_pass http://localhost:5173;
@@ -59,11 +62,12 @@ server {
         proxy_cache_bypass \$http_upgrade;
     }
 
-    # 🖼️ Uploads de Imagens e Diretórios Estáticos
+    # 🖼️ Uploads de Imagens e Diretórios Estáticos (Servidos nativamente pelo Nginx)
     location /uploads {
-        proxy_pass http://localhost:3001/uploads;
-        proxy_http_version 1.1;
-        proxy_set_header Host \$host;
+        alias \$(pwd)/backend/uploads;
+        autoindex off;
+        access_log off;
+        expires max;
     }
 }
 EOF

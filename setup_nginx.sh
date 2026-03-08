@@ -24,12 +24,21 @@ else
     echo "Nginx já está instalado."
 fi
 
-echo -e "\n${YELLOW}[2/3] A configurar Host Remoto (Reverse Proxy)...${NC}"
+echo -e "Introduza o seu Domínio para SSL Grátis (ex: srv1468694.hstgr.cloud ou rentacar.co.mz)."
+echo -e "(Deixe vazio e pressione ENTER se quiser usar apenas o IP sem cadeado SSL):"
+read -r SERVER_NAME
+
+HAS_DOMAIN=true
+if [ -z "$SERVER_NAME" ]; then
+    SERVER_NAME="_"
+    HAS_DOMAIN=false
+    echo "⚙️ Configurado apenas para acessos IP directos (Sem SSL)."
+fi
 
 cat > /etc/nginx/sites-available/rentacar << EOF
 server {
-    listen 80 default_server;
-    server_name _;
+    listen 80;
+    server_name ${SERVER_NAME};
 
     # ⬆️ Permitir Uploads Grandes (ex: fotos de viaturas, comprovativos)
     client_max_body_size 50M;
@@ -75,5 +84,19 @@ nginx -t
 systemctl restart nginx
 systemctl enable nginx
 
-echo -e "\n${GREEN}🏆 Nginx Premium perfeitamente configurado!${NC}"
-echo -e "O teu Rent-a-Car está acessível online (Domínio e IP)!"
+echo -e "\n${GREEN}🏆 Nginx configurado com sucesso!${NC}"
+
+if [ "$HAS_DOMAIN" = true ]; then
+    echo -e "\n${YELLOW}[4/4] A Instalar e Gerar Certificado SSL (Cadeado Seguro)...${NC}"
+    if ! command -v certbot &> /dev/null
+    then
+        apt-get install -y certbot python3-certbot-nginx
+    fi
+    
+    echo "A pedir certificado Let's Encrypt para ${SERVER_NAME}..."
+    certbot --nginx -d ${SERVER_NAME} --non-interactive --agree-tos -m admin@${SERVER_NAME} --redirect
+    
+    echo -e "\n${GREEN}🔐 SSL Premium Ativado! O teu Rent-a-Car está acessível e 100% Seguro em: https://${SERVER_NAME}/${NC}"
+else
+    echo -e "\nO teu Rent-a-Car está acessível online via IP HTTP Direto!"
+fi

@@ -15,26 +15,30 @@ import AdminBookings from './pages/admin/Bookings';
 import AdminClients from './pages/admin/Clients';
 import AdminSettings from './pages/admin/Settings';
 
+import { ThemeProvider } from './components/ThemeProvider';
+
 export default function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/vehicles" element={<Vehicles />} />
-        <Route path="/vehicles/:id" element={<VehicleDetail />} />
-        <Route path="/transfers" element={<Transfers />} />
-        <Route path="/checkout/:type/:id" element={<Checkout />} />
-        <Route path="/my-bookings" element={<MyBookings />} />
-        <Route path="/profile" element={<Profile />} />
-      </Route>
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="vehicles" element={<AdminVehicles />} />
-        <Route path="transfers" element={<AdminTransfers />} />
-        <Route path="bookings" element={<AdminBookings />} />
-        <Route path="clients" element={<AdminClients />} />
-        <Route path="settings" element={<AdminSettings />} />
-      </Route>
-    </Routes>
+    <ThemeProvider>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/vehicles" element={<Vehicles />} />
+          <Route path="/vehicles/:id" element={<VehicleDetail />} />
+          <Route path="/transfers" element={<Transfers />} />
+          <Route path="/checkout/:type/:id" element={<Checkout />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="vehicles" element={<AdminVehicles />} />
+          <Route path="transfers" element={<AdminTransfers />} />
+          <Route path="bookings" element={<AdminBookings />} />
+          <Route path="clients" element={<AdminClients />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
+      </Routes>
+    </ThemeProvider>
   );
 }

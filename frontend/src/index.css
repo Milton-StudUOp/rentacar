@@ -10,16 +10,32 @@
   --primary-dark: #0d9488;
   --accent: #f59e0b;
   --accent-light: #fbbf24;
-  --bg-dark: #0c0f1a;
-  --bg-card: #1a1d2e;
-  --bg-card-hover: #242840;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --gradient-start: #0f766e;
-  --gradient-end: #0ea5e9;
   --danger: #ef4444;
   --success: #22c55e;
   --warning: #f59e0b;
+  --gradient-start: #0f766e;
+  --gradient-end: #0ea5e9;
+
+  /* Light Theme Defaults */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-navbar: rgba(255, 255, 255, 0.85);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+}
+
+.dark {
+  /* Dark Theme Overrides */
+  color-scheme: dark;
+  --bg-main: #0c0f1a;
+  --bg-card: #1a1d2e;
+  --bg-card-hover: #242840;
+  --bg-navbar: rgba(12, 15, 26, 0.85);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.05);
 }
 
 * {
@@ -34,8 +50,6 @@ html {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -46,7 +60,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+  background-color: var(--bg-card);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -108,79 +122,225 @@ select option {
   color: #f1f5f9;
 }
 
-/* React DatePicker Custom Premium Theme */
-.react-datepicker-wrapper {
-  width: 100%;
-}
-
-.react-datepicker-popper,
-.react-datepicker-portal {
+/* Flatpickr Custom Premium Theme */
+.flatpickr-calendar {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  color: #1e293b !important;
+  padding: 5px !important;
   z-index: 9999 !important;
+  /* Fix for admin dashboard cards overlap */
 }
 
-.react-datepicker {
-  background-color: rgba(12, 15, 26, 0.95) !important;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 1rem !important;
-  font-family: inherit !important;
-  color: var(--text-primary) !important;
+html.dark .flatpickr-calendar {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  color: #f1f5f9 !important;
 }
 
-.react-datepicker__header {
-  background-color: transparent !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-top-left-radius: 1rem !important;
-  border-top-right-radius: 1rem !important;
-  padding-top: 1rem !important;
+/* Calendar Header */
+.flatpickr-months {
+  background: #f8fafc !important;
+  /* Subtle contrast for light mode */
+  border-radius: 8px;
+  margin-bottom: 4px;
 }
 
-.react-datepicker__current-month,
-.react-datepicker-time__header,
-.react-datepicker-year-header {
-  color: var(--text-primary) !important;
+html.dark .flatpickr-months {
+  background: transparent !important;
+}
+
+.flatpickr-month {
+  background: transparent !important;
+  color: #1e293b !important;
+  fill: #1e293b !important;
+}
+
+.flatpickr-current-month {
+  color: inherit !important;
+  padding-top: 0 !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  background: transparent !important;
+  color: inherit !important;
+  font-weight: 700 !important;
+  appearance: none;
+  cursor: pointer;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.dark .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+html.dark .flatpickr-month {
+  color: #f1f5f9 !important;
+  fill: #f1f5f9 !important;
+}
+
+.flatpickr-current-month .numInputWrapper {
+  background: transparent !important;
+}
+
+.flatpickr-current-month .numInputWrapper:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.dark .flatpickr-current-month .numInputWrapper:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.flatpickr-current-month input.cur-year {
+  color: inherit !important;
+  font-weight: 700 !important;
+}
+
+/* Weekdays */
+.flatpickr-weekdays {
+  background: transparent !important;
+}
+
+.flatpickr-weekday {
+  background: transparent !important;
+  color: #64748b !important;
   font-weight: 600 !important;
 }
 
-.react-datepicker__day-name {
-  color: var(--text-secondary) !important;
+html.dark .flatpickr-weekday {
+  color: #94a3b8 !important;
 }
 
-.react-datepicker__day {
-  color: var(--text-primary) !important;
+/* Days */
+.flatpickr-day {
+  color: #1e293b !important;
+  border-radius: 8px !important;
+  margin: 2px !important;
 }
 
-.react-datepicker__day:hover,
-.react-datepicker__month-text:hover,
-.react-datepicker__quarter-text:hover,
-.react-datepicker__year-text:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 0.5rem !important;
+html.dark .flatpickr-day {
+  color: #f1f5f9 !important;
 }
 
-.react-datepicker__day--selected,
-.react-datepicker__day--in-selecting-range,
-.react-datepicker__day--in-range,
-.react-datepicker__month-text--selected,
-.react-datepicker__quarter-text--selected,
-.react-datepicker__year-text--selected {
-  background-color: var(--primary-light) !important;
-  color: #0c0f1a !important;
-  font-weight: bold !important;
-  border-radius: 0.5rem !important;
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+  background: #f1f5f9 !important;
+  border-color: transparent !important;
 }
 
-.react-datepicker__day--keyboard-selected {
-  background-color: rgba(20, 184, 166, 0.2) !important;
-  color: var(--primary-light) !important;
-  border-radius: 0.5rem !important;
+html.dark .flatpickr-day:hover,
+html.dark .flatpickr-day:focus {
+  background: #1e293b !important;
+  border-color: transparent !important;
 }
 
-.react-datepicker__navigation-icon::before {
-  border-color: var(--text-secondary) !important;
+.flatpickr-day.selected {
+  background: #0d9488 !important;
+  /* teal-600 */
+  border-color: #0d9488 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
-.react-datepicker__navigation:hover *::before {
-  border-color: var(--text-primary) !important;
+/* Time Picker Section */
+.flatpickr-time {
+  border-top: 1px solid #e2e8f0 !important;
+  max-height: 50px !important;
+}
+
+html.dark .flatpickr-time {
+  border-top: 1px solid #1e293b !important;
+}
+
+.flatpickr-time input,
+.flatpickr-time .numInputWrapper {
+  color: #1e293b !important;
+  background: transparent !important;
+}
+
+html.dark .flatpickr-time input,
+html.dark .flatpickr-time .numInputWrapper {
+  color: #f1f5f9 !important;
+  background: transparent !important;
+}
+
+/* THIS FIXES THE GREY BOX ON TIME HOVER/FOCUS */
+.flatpickr-time input:hover,
+.flatpickr-time input:focus,
+.flatpickr-time .numInputWrapper:hover,
+.flatpickr-time .numInputWrapper:focus {
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+html.dark .flatpickr-time input:hover,
+html.dark .flatpickr-time input:focus,
+html.dark .flatpickr-time .numInputWrapper:hover,
+html.dark .flatpickr-time .numInputWrapper:focus {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+/* AM/PM toggle */
+.flatpickr-am-pm {
+  color: #1e293b !important;
+}
+
+html.dark .flatpickr-am-pm {
+  color: #f1f5f9 !important;
+}
+
+.flatpickr-am-pm:hover,
+.flatpickr-am-pm:focus {
+  background: #f1f5f9 !important;
+}
+
+html.dark .flatpickr-am-pm:hover,
+html.dark .flatpickr-am-pm:focus {
+  background: #1e293b !important;
+}
+
+/* Fix arrows */
+.numInputWrapper span.arrowUp:after {
+  border-bottom-color: #94a3b8 !important;
+}
+
+.numInputWrapper span.arrowDown:after {
+  border-top-color: #94a3b8 !important;
+}
+
+/* Fix Native Time Inputs (Chrome/Edge/Safari) */
+input[type="time"] * {
+  background: transparent !important;
+}
+
+input[type="date"]::-webkit-datetime-edit,
+input[type="time"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="time"]::-webkit-datetime-edit-fields-wrapper,
+input[type="time"]::-webkit-datetime-edit-text,
+input[type="time"]::-webkit-datetime-edit-hour-field,
+input[type="time"]::-webkit-datetime-edit-minute-field,
+input[type="time"]::-webkit-datetime-edit-ampm-field {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+input[type="time"]::-webkit-datetime-edit-hour-field:focus,
+input[type="time"]::-webkit-datetime-edit-minute-field:focus,
+input[type="time"]::-webkit-datetime-edit-ampm-field:focus {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border-radius: 4px;
+}
+
+/* Fix the calendar icon color in dark mode */
+.dark input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
 }

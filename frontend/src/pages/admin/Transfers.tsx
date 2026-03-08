@@ -70,10 +70,10 @@ export default function AdminTransfers() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold">Transversais (Serviços)</h1>
-                    <p className="text-slate-400 mt-1">Gerir opções de viaturas para pedido de Transfer</p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="animate-fade-in-up">
+                    <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-2">Transfers <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500">(Serviços)</span></h1>
+                    <p className="text-slate-400 mt-1 text-sm md:text-lg">Gerir opções de viaturas para pedido de Transfer</p>
                 </div>
                 <div className="flex gap-2">
                     <button

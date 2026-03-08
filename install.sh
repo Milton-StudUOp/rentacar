@@ -68,7 +68,8 @@ if [ ! -f "dist/main.js" ]; then
     
     # Resolver problema onde tsc cria dist/src/main.js devido ao ficheiro seed.ts
     if [ -f "dist/src/main.js" ]; then
-        mv dist/src/* dist/
+        cp -r dist/src/* dist/
+        rm -rf dist/src
     fi
 fi
 cd ..

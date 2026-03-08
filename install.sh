@@ -59,8 +59,18 @@ npx prisma migrate deploy
 echo "🌱 A popular base de dados inicial (Seed)..."
 npm run prisma:seed
 
-echo "🏗️ A compilar o Backend para Produção..."
-npm run build
+echo "🏗️ A compilar o Backend para Produção (Pode demorar uns instantes)..."
+npm run build || true
+
+if [ ! -f "dist/main.js" ]; then
+    echo -e "${YELLOW}⚠️ 'nest build' falhou (Possível OOM). A usar fallback TSC nativo leve...${NC}"
+    npx tsc
+    
+    # Resolver problema onde tsc cria dist/src/main.js devido ao ficheiro seed.ts
+    if [ -f "dist/src/main.js" ]; then
+        mv dist/src/* dist/
+    fi
+fi
 cd ..
 
 echo -e "\n${YELLOW}[4/5] Configurando o Frontend (React + Vite)...${NC}"

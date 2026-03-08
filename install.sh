@@ -25,7 +25,7 @@ else
 fi
 
 echo -e "\n${YELLOW}[2/5] Configurando Variáveis de Ambiente (.env)...${NC}"
-if [ ! -f "backend/.env" ]; then
+    rm -f backend/.env frontend/.env
     echo "A criar backend/.env a partir do .env.example..."
     cp .env.example backend/.env
     
@@ -37,11 +37,9 @@ if [ ! -f "backend/.env" ]; then
         sed -i "s/mysql:\/\/root:@localhost/mysql:\/\/root:${DB_PASS}@localhost/g" backend/.env
         echo "Password conectada ao Prisma via backend/.env!"
     fi
-fi
-if [ ! -f "frontend/.env" ]; then
+
     echo "A criar frontend/.env a partir do .env.example..."
     cp .env.example frontend/.env
-fi
 
 echo -e "\n${YELLOW}[3/5] Configurando o Backend (NestJS + Prisma)...${NC}"
 cd backend

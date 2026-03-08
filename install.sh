@@ -24,7 +24,17 @@ else
     echo "PM2 já está instalado no sistema. Ótimo!"
 fi
 
-echo -e "\n${YELLOW}[2/4] Configurando o Backend (NestJS + Prisma)...${NC}"
+echo -e "\n${YELLOW}[2/5] Configurando Variáveis de Ambiente (.env)...${NC}"
+if [ ! -f "backend/.env" ]; then
+    echo "A criar backend/.env a partir do .env.example..."
+    cp .env.example backend/.env
+fi
+if [ ! -f "frontend/.env" ]; then
+    echo "A criar frontend/.env a partir do .env.example..."
+    cp .env.example frontend/.env
+fi
+
+echo -e "\n${YELLOW}[3/5] Configurando o Backend (NestJS + Prisma)...${NC}"
 cd backend
 echo "📦 A instalar dependências do NPM..."
 npm install
@@ -43,7 +53,7 @@ echo "🏗️ A compilar o Backend para Produção..."
 npm run build
 cd ..
 
-echo -e "\n${YELLOW}[3/4] Configurando o Frontend (React + Vite)...${NC}"
+echo -e "\n${YELLOW}[4/5] Configurando o Frontend (React + Vite)...${NC}"
 cd frontend
 echo "📦 A instalar dependências do NPM..."
 npm install
@@ -52,7 +62,7 @@ echo "🎨 A compilar Frontend App para Produção (Gerando assets óticos)..."
 npm run build
 cd ..
 
-echo -e "\n${YELLOW}[4/4] Permissões de Script...${NC}"
+echo -e "\n${YELLOW}[5/5] Permissões de Script...${NC}"
 chmod +x start.sh
 
 echo -e "\n${GREEN}✅ Migração e Instalação concluídas com sucesso incomparável!${NC}"

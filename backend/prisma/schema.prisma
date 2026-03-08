@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum BookingType {
+  VEHICLE
+  TRANSFER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  PAID
+  AWAITING_DELIVERY
+  DELIVERED
+  CANCELLED
+  COMPLETED
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  BLOCKED
+  MAINTENANCE
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(191)
+  email     String?   @unique @db.VarChar(191)
+  phone     String    @unique @db.VarChar(50)
+  password  String    @db.VarChar(255)
+  role      Role      @default(CLIENT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+
+  @@map("users")
+}
+
+model Region {
+  id       Int     @id @default(autoincrement())
+  province String  @db.VarChar(100)
+  city     String  @db.VarChar(100)
+  area     String? @db.VarChar(100)
+
+  createdAt DateTime        @default(now())
+  vehicles  VehicleRegion[]
+
+  @@map("regions")
+}
+
+model Vehicle {
+  id           Int      @id @default(autoincrement())
+  brand        String   @db.VarChar(100)
+  model        String   @db.VarChar(100)
+  year         Int
+  category     String   @db.VarChar(50)
+  transmission String   @db.VarChar(20)
+  fuelType     String   @db.VarChar(20)
+  seats        Int
+  pricePerDay  Decimal  @db.Decimal(10, 2)
+  description  String?  @db.Text
+  features     String?  @db.Text
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  images       VehicleImage[]
+  regions      VehicleRegion[]
+  availability VehicleAvailability[]
+  bookings     VehicleBooking[]
+
+  @@map("vehicles")
+}
+
+model VehicleImage {
+  id        Int      @id @default(autoincrement())
+  vehicleId Int
+  url       String   @db.VarChar(400)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_images")
+}
+
+model VehicleRegion {
+  id        Int     @id @default(autoincrement())
+  vehicleId Int
+  regionId  Int
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  region    Region  @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@unique([vehicleId, regionId])
+  @@map("vehicle_region")
+}
+
+model VehicleAvailability {
+  id        Int                @id @default(autoincrement())
+  vehicleId Int
+  date      DateTime           @db.Date
+  status    AvailabilityStatus @default(AVAILABLE)
+  reason    String?            @db.VarChar(255)
+  vehicle   Vehicle            @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([vehicleId, date])
+  @@map("vehicle_availability")
+}
+
+model TransferService {
+  id          Int               @id @default(autoincrement())
+  name        String            @db.VarChar(255)
+  description String?           @db.Text
+  vehicleType String            @db.VarChar(100)
+  capacity    Int
+  imageUrl    String?           @db.VarChar(400)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  bookings    TransferBooking[]
+
+  @@map("transfer_services")
+}
+
+model Booking {
+  id             Int           @id @default(autoincrement())
+  userId         Int
+  type           BookingType
+  status         BookingStatus @default(PENDING)
+  totalPrice     Decimal       @db.Decimal(10, 2)
+  notes          String?       @db.Text
+  rating         Int?
+  ratingComment  String?       @db.Text
+  clientArchived Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  user           User          @relation(fields: [userId], references: [id])
+
+  vehicleBooking  VehicleBooking?
+  transferBooking TransferBooking?
+  payment         Payment?
+
+  @@map("bookings")
+}
+
+model VehicleBooking {
+  id        Int      @id @default(autoincrement())
+  bookingId Int      @unique
+  vehicleId Int
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+
+  @@map("vehicle_bookings")
+}
+
+model TransferBooking {
+  id          Int             @id @default(autoincrement())
+  bookingId   Int             @unique
+  serviceId   Int
+  origin      String          @db.VarChar(255)
+  destination String          @db.VarChar(255)
+  travelDate  DateTime        @db.Date
+  travelTime  String          @db.VarChar(5)
+  passengers  Int
+  isRoundTrip Boolean         @default(false)
+  returnDate  DateTime?       @db.Date
+  returnTime  String?         @db.VarChar(5)
+  booking     Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  service     TransferService @relation(fields: [serviceId], references: [id])
+
+  @@map("transfer_bookings")
+}
+
+model Payment {
+  id         Int       @id @default(autoincrement())
+  bookingId  Int       @unique
+  reference  String?   @unique @db.VarChar(50)
+  amount     Decimal   @db.Decimal(10, 2)
+  method     String    @db.VarChar(50)
+  status     String    @default("PENDING") @db.VarChar(20)
+  receiptUrl String?   @db.VarChar(400)
+  paidAt     DateTime?
+  createdAt  DateTime  @default(now())
+  booking    Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(255)
+  message   String   @db.Text
+  type      String   @db.VarChar(50) // e.g., 'NEW_BOOKING'
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}

@@ -25,19 +25,11 @@ else
 fi
 
 echo -e "\n${YELLOW}[2/3] A configurar Host Remoto (Reverse Proxy)...${NC}"
-echo -e "Introduza o IP público do seu servidor ou Domínio web (ex: rentacar.co.mz ou 192.168.1.100)."
-echo -e "(Deixe vazio e pressione ENTER para ser o servidor padrão na internet):"
-read -r SERVER_NAME
-
-if [ -z "$SERVER_NAME" ]; then
-    SERVER_NAME="_"
-    echo "⚙️ Configurado como acesso padrão (Qualquer IP/Domínio)."
-fi
 
 cat > /etc/nginx/sites-available/rentacar << EOF
 server {
-    listen 80;
-    server_name ${SERVER_NAME};
+    listen 80 default_server;
+    server_name _;
 
     # ⬆️ Permitir Uploads Grandes (ex: fotos de viaturas, comprovativos)
     client_max_body_size 50M;
@@ -84,8 +76,4 @@ systemctl restart nginx
 systemctl enable nginx
 
 echo -e "\n${GREEN}🏆 Nginx Premium perfeitamente configurado!${NC}"
-if [ "$SERVER_NAME" == "_" ]; then
-    echo -e "O teu Rent-a-Car está acessível online diretamente pelo IP deste servidor!"
-else
-    echo -e "O teu Rent-a-Car está acessível online em: http://${SERVER_NAME}/"
-fi
+echo -e "O teu Rent-a-Car está acessível online (Domínio e IP)!"

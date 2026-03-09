@@ -228,9 +228,9 @@ export default function AdminDashboard() {
             )}
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative z-10 transition-colors">
+            <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative z-10 transition-colors overflow-x-auto snap-x snap-mandatory pb-4 hide-scrollbar">
                 {cards.map((c, i) => (
-                    <div key={i} className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl p-6 group hover:-translate-y-1 hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300 relative overflow-hidden animate-fade-in-up">
+                    <div key={i} className="min-w-[85vw] sm:min-w-[calc(50%-12px)] md:min-w-0 snap-center bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl p-6 group hover:-translate-y-1 hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300 relative overflow-hidden animate-fade-in-up">
                         {/* Background glow */}
                         <div className={`absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br ${c.gradient} opacity-10 dark:opacity-20 group-hover:opacity-20 dark:group-hover:opacity-40 blur-3xl transition-opacity duration-300`} />
 
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 transition-colors">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-colors">
                 {/* Booking Status Breakdown */}
                 <div className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl p-6 transition-colors">
                     <div className="flex items-center gap-2 mb-6 transition-colors">
@@ -390,7 +390,8 @@ export default function AdminDashboard() {
                         Ver todas <ArrowRight className="w-3 h-3" />
                     </Link>
                 </div>
-                <div className="overflow-x-auto w-full pb-2">
+                {/* Horizontal scroll native for tables on mobile */}
+                <div className="overflow-x-auto w-full pb-2 hide-scrollbar">
                     <table className="w-full text-sm min-w-[800px] whitespace-nowrap">
                         <thead>
                             <tr className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider transition-colors">

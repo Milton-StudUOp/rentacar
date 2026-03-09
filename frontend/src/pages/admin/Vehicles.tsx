@@ -368,7 +368,8 @@ export default function AdminVehicles() {
 
             {/* Table */}
             <div className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl overflow-hidden transition-colors">
-                <div className="overflow-x-auto w-full pb-2">
+                {/* Desktop Table */}
+                <div className="overflow-x-auto w-full pb-2 hidden lg:block">
                     <table className="w-full text-sm min-w-[800px] whitespace-nowrap">
                         <thead>
                             <tr className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 transition-colors">
@@ -443,7 +444,93 @@ export default function AdminVehicles() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Mobile Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 lg:hidden">
+                    {data?.data?.map((v: Vehicle) => (
+                        <div key={v.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-white/5 p-4 flex flex-col gap-4 relative overflow-hidden group shadow-sm z-0">
+                            {/* Viatura Info */}
+                            <div className="flex items-center gap-4 relative z-10">
+                                {v.images?.[0]?.url ? (
+                                    <div className="w-16 h-16 rounded-xl overflow-hidden ring-1 ring-slate-200 dark:ring-white/10 shrink-0 shadow-lg relative group-hover:ring-cyan-500/50 transition-all">
+                                        <img src={v.images[0].url} alt={v.model} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    </div>
+                                ) : (
+                                    <div className="w-16 h-16 rounded-xl bg-slate-200/50 dark:bg-slate-800/80 flex items-center justify-center shrink-0 border border-slate-200 dark:border-white/5 transition-colors">
+                                        <Car className="w-8 h-8 text-slate-400 dark:text-slate-500 transition-colors" />
+                                    </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-base text-slate-900 dark:text-white truncate group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">{v.brand} {v.model}</h3>
+                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                        <span className="px-2 py-0.5 rounded-md bg-slate-200 dark:bg-white/10 text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">{v.category}</span>
+                                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{v.year}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Details Grid */}
+                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-slate-200 dark:border-white/5 relative z-10">
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Combustível</span>
+                                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{v.fuelType}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Caixa</span>
+                                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{v.transmission}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Lugares</span>
+                                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{v.seats} Pax</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] uppercase font-bold text-teal-500 dark:text-teal-400 tracking-wider">Preço / Dia</span>
+                                    <span className="text-base font-black text-teal-600 dark:text-teal-400 drop-shadow-sm">{Number(v.pricePerDay).toLocaleString()} <span className="text-[10px] font-bold">MT</span></span>
+                                </div>
+                            </div>
+
+                            {/* Actions Toolbar */}
+                            <div className="pt-3 border-t border-slate-200 dark:border-white/5 flex items-center justify-between gap-2 relative z-10">
+                                <button
+                                    onClick={() => handleEdit(v)}
+                                    className="flex-1 px-3 py-2.5 rounded-lg bg-slate-200/50 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all border border-slate-200 dark:border-white/5 text-xs font-semibold flex items-center justify-center gap-1.5"
+                                >
+                                    <Edit2 className="w-3.5 h-3.5" /> Editar
+                                </button>
+                                <button
+                                    onClick={() => { setEditId(v.id); setShowImages(true); }}
+                                    className="px-3 py-2.5 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 hover:bg-cyan-100 dark:hover:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 transition-all border border-cyan-200 dark:border-cyan-500/30 text-xs font-semibold flex items-center justify-center shadow-sm"
+                                    title="Gerir Imagens"
+                                >
+                                    <ImageIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => { if (confirm('Remover viatura?')) deleteMutation.mutate(v.id); }}
+                                    className="px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all border border-red-200 dark:border-red-500/30 text-xs font-semibold flex items-center justify-center shadow-sm"
+                                    title="Eliminar"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+
+                    {(!data?.data || data.data.length === 0) && (
+                        <div className="col-span-1 sm:col-span-2 py-10 text-center bg-slate-50 dark:bg-slate-900/50 rounded-2xl border-2 border-slate-200 dark:border-white/5 border-dashed">
+                            <Car className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
+                            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Nenhuma viatura registada.</p>
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {/* Mobile FAB */}
+            <button
+                onClick={() => { resetForm(); setShowForm(true); }}
+                className="md:hidden fixed bottom-[90px] right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-xl shadow-teal-500/30 flex items-center justify-center transition-transform active:scale-95"
+            >
+                <Plus className="w-6 h-6" />
+            </button>
         </div>
     );
 }

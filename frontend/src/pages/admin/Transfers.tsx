@@ -176,54 +176,64 @@ export default function AdminTransfers() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {services?.map((s: { id: number; name: string; description: string; vehicleType: string; capacity: number; imageUrl?: string }) => (
-                        <div key={s.id} className="glass rounded-2xl overflow-hidden relative group">
-                            {/* Background image if exists */}
-                            {s.imageUrl && (
-                                <div className="absolute inset-0 z-0">
-                                    <img src={api.defaults.baseURL?.replace('/api', '') + s.imageUrl} alt={s.name} className="w-full h-full object-cover opacity-10 grayscale-[50%]" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/90 to-[#0f172a]/40" />
-                                </div>
-                            )}
+                        <div key={s.id} className="glass rounded-2xl overflow-hidden relative group flex flex-col hover:border-teal-500/30 transition-colors">
+                            {/* Image Header with Actions */}
+                            <div className="h-48 relative overflow-hidden bg-white/5 flex items-center justify-center">
+                                {s.imageUrl ? (
+                                    <>
+                                        <img src={api.defaults.baseURL?.replace('/api', '') + s.imageUrl} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1d] to-transparent" />
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center text-slate-500 opacity-60">
+                                        <ArrowLeftRight className="w-12 h-12 mb-2" />
+                                        <span className="text-xs font-bold uppercase tracking-wider">Sem Imagem</span>
+                                    </div>
+                                )}
 
-                            <div className="relative z-10 p-6 flex flex-col h-full">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-teal-500/20 flex items-center justify-center shadow-lg">
-                                        <ArrowLeftRight className="w-6 h-6 text-teal-400" />
-                                    </div>
-                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            onClick={() => {
-                                                setEditServiceId(s.id);
-                                                setServiceForm({ name: s.name, description: s.description || '', vehicleType: s.vehicleType, capacity: s.capacity, imageUrl: s.imageUrl || '' });
-                                                setShowServiceForm(true);
-                                            }}
-                                            className="p-2 rounded-lg bg-teal-500/20 hover:bg-teal-500/40 text-teal-300 hover:text-white transition-colors"
-                                            title="Editar Serviço"
-                                        >
-                                            <Edit2 className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={() => { if (confirm('Remover este serviço? Esta acção afetará as submissões de clientes em aberto.')) deleteService.mutate(s.id); }}
-                                            className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-300 transition-colors"
-                                            title="Eliminar Serviço"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
+                                {/* Overlay Action Buttons */}
+                                <div className="absolute top-4 right-4 flex gap-2 opacity-100 xl:opacity-0 xl:group-hover:opacity-100 transition-opacity z-20">
+                                    <button
+                                        onClick={() => {
+                                            setEditServiceId(s.id);
+                                            setServiceForm({ name: s.name, description: s.description || '', vehicleType: s.vehicleType, capacity: s.capacity, imageUrl: s.imageUrl || '' });
+                                            setShowServiceForm(true);
+                                        }}
+                                        className="p-2 rounded-lg bg-teal-500/80 backdrop-blur-md hover:bg-teal-500 text-white transition-colors shadow-lg"
+                                        title="Editar Serviço"
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => { if (confirm('Remover este serviço? Esta acção afetará as submissões de clientes em aberto.')) deleteService.mutate(s.id); }}
+                                        className="p-2 rounded-lg bg-red-500/80 backdrop-blur-md hover:bg-red-500 text-white transition-colors shadow-lg"
+                                        title="Eliminar Serviço"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
                                 </div>
-                                <div className="flex-grow">
-                                    <h3 className="font-bold text-xl text-white mb-2">{s.name}</h3>
-                                    <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300 mb-3">
-                                        <span className="bg-white/10 px-2 py-1 rounded-md">{s.vehicleType}</span>
-                                        <span className="bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-md">Até {s.capacity} Lugares</span>
-                                    </div>
-                                    {s.description && <p className="text-sm text-slate-400 line-clamp-3 leading-relaxed">{s.description}</p>}
+                            </div>
+
+                            <div className="relative z-10 p-6 flex flex-col flex-1">
+                                <h3 className="font-bold text-xl text-white mb-2 group-hover:text-teal-400 transition-colors">{s.name}</h3>
+                                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300 mb-4">
+                                    <span className="bg-white/10 border border-white/10 px-2.5 py-1 rounded-lg backdrop-blur-sm">{s.vehicleType}</span>
+                                    <span className="bg-teal-500/20 text-teal-300 border border-teal-500/20 px-2.5 py-1 rounded-lg backdrop-blur-sm">Até {s.capacity} Lugares</span>
                                 </div>
+                                {s.description && <p className="text-sm text-slate-400 line-clamp-3 leading-relaxed mt-auto">{s.description}</p>}
                             </div>
                         </div>
                     ))}
                 </div>
             )}
+
+            {/* Mobile FAB */}
+            <button
+                onClick={() => { resetServiceForm(); setShowServiceForm(true); }}
+                className="md:hidden fixed bottom-[90px] right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-xl shadow-teal-500/30 flex items-center justify-center transition-transform active:scale-95"
+            >
+                <Plus className="w-6 h-6" />
+            </button>
         </div>
     );
 }

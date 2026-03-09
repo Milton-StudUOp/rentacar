@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../lib/api';
-import { Fuel, Users, Settings, Calendar, MapPin, ArrowRight, Check } from 'lucide-react';
+import { Fuel, Users, Settings, Calendar, MapPin, ArrowRight, Check, Building2 } from 'lucide-react';
 import ImageCarousel from '../components/ImageCarousel';
+import CorporateRequestModal from '../components/CorporateRequestModal';
 
 export default function VehicleDetail() {
     const { id } = useParams();
+    const [isCorporateModalOpen, setIsCorporateModalOpen] = useState(false);
 
     const { data: vehicle, isLoading } = useQuery({
         queryKey: ['vehicle', id],
@@ -138,12 +141,20 @@ export default function VehicleDetail() {
 
                             <Link
                                 to={`/checkout/vehicle/${vehicle.id}`}
-                                className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 dark:hover:from-teal-400 dark:hover:to-cyan-400 transition-all shadow-lg shadow-teal-500/25"
+                                className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 dark:hover:from-teal-400 dark:hover:to-cyan-400 transition-all shadow-lg shadow-teal-500/25 mb-4"
                                 id="reserve-vehicle-btn"
                             >
                                 Reservar Agora
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
+
+                            <button
+                                onClick={() => setIsCorporateModalOpen(true)}
+                                className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/5 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all group shadow-sm"
+                            >
+                                <Building2 className="w-4 h-4 text-teal-600 dark:text-teal-400 group-hover:text-current transition-colors" />
+                                Aluguer Empresarial (B2B)
+                            </button>
 
                             <div className="mt-8 space-y-4 text-sm border-t border-slate-200 dark:border-white/5 pt-6 transition-colors">
                                 <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 transition-colors">
@@ -163,6 +174,13 @@ export default function VehicleDetail() {
                     </div>
                 </div>
             </div>
+
+            <CorporateRequestModal
+                isOpen={isCorporateModalOpen}
+                onClose={() => setIsCorporateModalOpen(false)}
+                vehicleId={vehicle.id}
+                vehicleName={`${vehicle.brand} ${vehicle.model}`}
+            />
         </div>
     );
 }

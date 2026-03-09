@@ -1,3 +1,4 @@
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
@@ -26,7 +27,7 @@ export default function Transfers() {
     const [isRoundTrip, setIsRoundTrip] = useState(false);
     const [returnDate, setReturnDate] = useState('');
     const [returnTime, setReturnTime] = useState('');
-    const [passengers, setPassengers] = useState(1);
+    const [passengers, setPassengers] = useState<number | ''>(1);
     const [hasSearched, setHasSearched] = useState(false);
 
     const { data: services } = useQuery({
@@ -35,8 +36,8 @@ export default function Transfers() {
     });
 
     const { data: searchResults, refetch, isFetching } = useQuery({
-        queryKey: ['transferSearch', passengers],
-        queryFn: () => api.get('/transfers/search', { params: { passengers } }).then(r => r.data),
+        queryKey: ['transferSearch', passengers || 1],
+        queryFn: () => api.get('/transfers/search', { params: { passengers: passengers || 1 } }).then(r => r.data),
         enabled: false,
     });
 
@@ -60,7 +61,7 @@ export default function Transfers() {
             destination,
             date: travelDate,
             time: travelTime,
-            passengers: passengers.toString(),
+            passengers: (passengers || 1).toString(),
             isRoundTrip: isRoundTrip.toString(),
         };
         if (isRoundTrip) {
@@ -72,8 +73,24 @@ export default function Transfers() {
     };
 
     return (
-        <div className="min-h-screen py-8 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen py-8 transition-colors duration-300 relative overflow-hidden bg-slate-50 dark:bg-[#0a0d18]">
+            {/* Premium Background Elements */}
+            <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
+                <img src="/van.png" alt="Transfers Background" className="w-[800px] lg:w-[1000px] opacity-[0.15] dark:opacity-20 object-contain drop-shadow-2xl mix-blend-luminosity filter saturate-50" />
+                {/* Gradients to fade the edges seamlessly */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-slate-50 dark:from-[#0a0d18] dark:via-transparent dark:to-[#0a0d18] transition-colors duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-transparent to-slate-50 dark:from-[#0a0d18] dark:via-transparent dark:to-[#0a0d18] transition-colors duration-300"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-500/5 dark:from-teal-500/5 via-transparent to-transparent transition-colors duration-300"></div>
+
+                {/* Glows */}
+                <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-teal-500/5 dark:bg-teal-500/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen"></div>
+                <div className="absolute bottom-1/4 -left-[200px] w-[600px] h-[600px] bg-cyan-500/5 dark:bg-cyan-500/10 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen"></div>
+
+                {/* Premium Texture Overlay */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMCwwLDAsMC4wNSkiLz48L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,white,transparent)] opacity-40 dark:opacity-10"></div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 text-sm mb-4 transition-colors border border-teal-200 dark:border-teal-500/20">
@@ -87,9 +104,9 @@ export default function Transfers() {
                 </div>
 
                 {/* Search */}
-                <form onSubmit={handleSearch} className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-5xl mx-auto mb-12 relative z-20 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors">
+                <form onSubmit={handleSearch} className="bg-white/20 dark:bg-[#0a0d18]/30 border border-white/40 dark:border-white/10 backdrop-blur-xl rounded-3xl p-6 md:p-8 max-w-5xl mx-auto mb-12 relative z-20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] transition-colors">
                     <div className="flex justify-center mb-8">
-                        <div className="bg-slate-100 dark:bg-slate-900/50 p-1.5 rounded-2xl inline-flex relative border border-slate-200 dark:border-white/5 transition-colors">
+                        <div className="bg-white/40 dark:bg-slate-900/50 p-1.5 rounded-2xl inline-flex relative border border-white/50 dark:border-white/5 transition-colors backdrop-blur-md">
                             <button
                                 type="button"
                                 onClick={() => setIsRoundTrip(false)}
@@ -111,43 +128,46 @@ export default function Transfers() {
 
                     <div className="grid grid-cols-1 md:grid-cols-11 gap-6 mb-8 group">
                         <div className="md:col-span-5">
-                            <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2 transition-colors"><MapPin className="w-3.5 h-3.5 text-teal-500 dark:text-teal-400" /> Origem</label>
+                            <label className="block text-xs uppercase tracking-wider font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2 transition-colors"><MapPin className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" /> Origem</label>
                             <input
                                 type="text"
                                 required
                                 placeholder="ex: Aeroporto de Maputo"
                                 value={origin}
                                 onChange={(e) => setOrigin(e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
+                                className="w-full bg-white/30 dark:bg-black/20 border border-white/50 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:bg-white/50 dark:focus:bg-black/40 transition-all hover:bg-white/50 dark:hover:bg-black/30 backdrop-blur-md shadow-inner"
                             />
                         </div>
                         <div className="hidden md:flex items-center justify-center mt-6 md:col-span-1">
                             <ArrowRight className="w-6 h-6 text-slate-400 dark:text-slate-600 transition-colors" />
                         </div>
                         <div className="md:col-span-5">
-                            <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2 transition-colors"><MapPin className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" /> Destino</label>
+                            <label className="block text-xs uppercase tracking-wider font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2 transition-colors"><MapPin className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" /> Destino</label>
                             <input
                                 type="text"
                                 required
                                 placeholder="ex: Resort Ponta do Ouro"
                                 value={destination}
                                 onChange={(e) => setDestination(e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
+                                className="w-full bg-white/30 dark:bg-black/20 border border-white/50 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white/50 dark:focus:bg-black/40 transition-all hover:bg-white/50 dark:hover:bg-black/30 backdrop-blur-md shadow-inner"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
                         <div>
-                            <label className="block text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2 transition-colors"><Users className="w-4 h-4 text-slate-500 dark:text-slate-300" /> Pessoas</label>
+                            <label className="block text-xs uppercase tracking-wider font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2 transition-colors"><Users className="w-4 h-4 text-slate-600 dark:text-slate-300" /> Pessoas</label>
                             <input
                                 type="number"
                                 required
                                 min="1"
                                 placeholder="Passageiros"
                                 value={passengers}
-                                onChange={(e) => setPassengers(parseInt(e.target.value) || 1)}
-                                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-slate-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
+                                onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    setPassengers(isNaN(val) ? '' : val);
+                                }}
+                                className="w-full bg-white/30 dark:bg-black/20 border border-white/50 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-slate-500 focus:bg-white/50 dark:focus:bg-black/40 transition-all hover:bg-white/50 dark:hover:bg-black/30 backdrop-blur-md shadow-inner"
                             />
                         </div>
                         <div>
@@ -168,7 +188,7 @@ export default function Transfers() {
                                         dateFormat: 'Y-m-d',
                                         minDate: 'today',
                                     }}
-                                    className="w-[60%] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-teal-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
+                                    className="w-[60%] bg-white/30 dark:bg-black/20 border border-white/50 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:bg-white/50 dark:focus:bg-black/40 transition-all hover:bg-white/50 dark:hover:bg-black/30 backdrop-blur-md shadow-inner"
                                     placeholder="Data"
                                 />
                                 <Flatpickr
@@ -180,7 +200,7 @@ export default function Transfers() {
                                         dateFormat: 'H:i',
                                         time_24hr: true,
                                     }}
-                                    className="w-[40%] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-teal-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
+                                    className="w-[40%] bg-white/30 dark:bg-black/20 border border-white/50 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:bg-white/50 dark:focus:bg-black/40 transition-all hover:bg-white/50 dark:hover:bg-black/30 backdrop-blur-md shadow-inner"
                                     placeholder="Hora"
                                 />
                             </div>
@@ -198,7 +218,7 @@ export default function Transfers() {
                                         dateFormat: 'Y-m-d',
                                         minDate: travelDate || 'today',
                                     }}
-                                    className="w-[60%] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
+                                    className="w-[60%] bg-white/30 dark:bg-black/20 border border-white/50 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white/50 dark:focus:bg-black/40 transition-all hover:bg-white/50 dark:hover:bg-black/30 backdrop-blur-md shadow-inner"
                                     placeholder="Data"
                                     disabled={!isRoundTrip}
                                     required={isRoundTrip}
@@ -212,7 +232,7 @@ export default function Transfers() {
                                         dateFormat: 'H:i',
                                         time_24hr: true,
                                     }}
-                                    className="w-[40%] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
+                                    className="w-[40%] bg-white/30 dark:bg-black/20 border border-white/50 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white/50 dark:focus:bg-black/40 transition-all hover:bg-white/50 dark:hover:bg-black/30 backdrop-blur-md shadow-inner"
                                     placeholder="Hora"
                                     disabled={!isRoundTrip}
                                     required={isRoundTrip}
@@ -234,23 +254,23 @@ export default function Transfers() {
                 {/* Search Results */}
                 {hasSearched && searchResults && (
                     <div className="mb-12">
-                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2 transition-colors">
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2 transition-colors drop-shadow-sm">
                             <span>Viaturas adequadas para a sua viagem</span>
-                            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-teal-50 dark:bg-teal-500/20 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-transparent transition-colors">{searchResults.length} encontradas</span>
+                            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/40 dark:bg-white/10 backdrop-blur-md text-teal-800 dark:text-teal-300 border border-white/50 dark:border-white/20 shadow-sm transition-colors">{searchResults.length} encontradas</span>
                         </h2>
 
                         {searchResults.length === 0 ? (
-                            <div className="bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md rounded-2xl p-8 text-center border-dashed dark:border-dashed border-2 transition-colors">
-                                <Car className="w-12 h-12 text-slate-400 dark:text-slate-500 mx-auto mb-4 opacity-50 transition-colors" />
-                                <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2 transition-colors">Sem viaturas adequadas</h3>
-                                <p className="text-slate-600 dark:text-slate-400 transition-colors">Não foi possível encontrar viaturas com a capacidade necessária ({passengers} lugares). Tente reduzir o número de passageiros ou contacte-nos directamente.</p>
+                            <div className="bg-white/20 dark:bg-[#0a0d18]/30 border border-white/40 dark:border-white/20 backdrop-blur-xl rounded-2xl p-8 text-center border-dashed dark:border-dashed border-2 transition-colors shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)]">
+                                <Car className="w-12 h-12 text-slate-500 dark:text-slate-400 mx-auto mb-4 opacity-70 transition-colors" />
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 transition-colors drop-shadow-sm">Sem viaturas adequadas</h3>
+                                <p className="text-slate-700 dark:text-slate-300 transition-colors font-medium drop-shadow-sm">Não foi possível encontrar viaturas com a capacidade necessária ({passengers || 1} lugares). Tente reduzir o número de passageiros ou contacte-nos directamente.</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {searchResults.map((s: TransferService) => (
-                                    <div key={s.id} className="bg-white dark:bg-[#1a1d2e] border border-slate-200 dark:border-white/5 rounded-2xl overflow-hidden group hover:border-teal-500/50 dark:hover:border-teal-500/30 transition-all relative flex flex-col shadow-md hover:shadow-xl dark:shadow-none">
+                                    <div key={s.id} className="bg-white/20 dark:bg-[#0a0d18]/40 border border-white/40 dark:border-white/10 backdrop-blur-xl rounded-2xl overflow-hidden group hover:border-white/60 dark:hover:border-white/30 transition-all relative flex flex-col shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
                                         {s.imageUrl && (
-                                            <div className="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-800 transition-colors">
+                                            <div className="h-48 relative overflow-hidden bg-white/30 dark:bg-black/20 transition-colors">
                                                 <img src={api.defaults.baseURL?.replace('/api', '') + s.imageUrl} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent dark:from-[#0f172a] dark:to-transparent" />
                                             </div>
@@ -258,19 +278,19 @@ export default function Transfers() {
                                         <div className="flex-1 p-6 relative z-10 flex flex-col">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
-                                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">{s.name}</h3>
-                                                    <div className="text-sm font-medium text-teal-600 dark:text-teal-400 transition-colors">{s.vehicleType}</div>
+                                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1 transition-colors drop-shadow-sm">{s.name}</h3>
+                                                    <div className="text-sm font-bold text-teal-800 dark:text-teal-300 transition-colors drop-shadow-sm">{s.vehicleType}</div>
                                                 </div>
-                                                <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-white/10 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 transition-colors">
-                                                    <Users className="w-4 h-4 text-slate-500 dark:text-slate-300 transition-colors" />
-                                                    <span className="text-sm font-semibold text-slate-900 dark:text-white transition-colors">Até {s.capacity}</span>
+                                                <div className="flex items-center gap-1.5 bg-white/40 dark:bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/50 dark:border-white/20 transition-colors shadow-sm">
+                                                    <Users className="w-4 h-4 text-slate-700 dark:text-slate-200 transition-colors" />
+                                                    <span className="text-sm font-bold text-slate-900 dark:text-white transition-colors">Até {s.capacity}</span>
                                                 </div>
                                             </div>
-                                            <p className="text-sm text-slate-600 dark:text-slate-300 mb-6 flex-1 transition-colors">{s.description}</p>
+                                            <p className="text-sm text-slate-700 dark:text-slate-200 font-medium mb-6 flex-1 transition-colors drop-shadow-sm">{s.description}</p>
 
                                             <button
                                                 onClick={() => handleBook(s.id)}
-                                                className="w-full px-6 py-3 rounded-xl bg-slate-50 dark:bg-white/10 text-teal-700 dark:text-white font-semibold flex items-center justify-center gap-2 hover:bg-teal-500 hover:text-white dark:hover:bg-teal-500 dark:hover:text-white transition-all group/btn border border-slate-200 dark:border-white/5 hover:border-teal-500 dark:hover:border-teal-500"
+                                                className="w-full px-6 py-3 rounded-xl bg-white/40 dark:bg-white/10 backdrop-blur-md text-teal-800 dark:text-white font-bold flex items-center justify-center gap-2 hover:bg-gradient-to-r hover:from-teal-500 hover:to-cyan-500 hover:text-white dark:hover:from-teal-500 dark:hover:to-cyan-500 transition-all group/btn border border-white/50 dark:border-white/20 hover:border-transparent shadow-sm"
                                             >
                                                 Solicitar Cotação para '{origin}' <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                             </button>
@@ -285,16 +305,35 @@ export default function Transfers() {
                 {/* Services Overview (before search) */}
                 {!hasSearched && services && (
                     <div className="mb-12">
-                        <h2 className="text-xl font-bold mb-6 text-center text-slate-600 dark:text-slate-400 transition-colors">Nossa Frota de Transfers</h2>
-                        <div className="flex flex-wrap justify-center gap-4">
+                        <h2 className="text-xl font-bold mb-6 text-center text-slate-900 dark:text-white transition-colors drop-shadow-sm">Nossa Frota de Transfers</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {services.map((s: TransferService) => (
-                                <div key={s.id} className="bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md rounded-xl p-4 flex items-center gap-4 w-full sm:w-[calc(50%-1rem)] md:w-[calc(25%-1rem)] min-w-[280px] shadow-sm dark:shadow-none transition-colors">
-                                    <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-white/5 flex shrink-0 items-center justify-center border border-slate-200 dark:border-white/10 overflow-hidden transition-colors">
-                                        {s.imageUrl ? <img src={api.defaults.baseURL?.replace('/api', '') + s.imageUrl} className="w-full h-full object-cover" /> : <Car className="w-5 h-5 text-slate-400 transition-colors" />}
+                                <div key={s.id} className="bg-white/20 dark:bg-[#0a0d18]/40 border border-white/40 dark:border-white/10 backdrop-blur-xl rounded-2xl overflow-hidden group hover:border-white/60 dark:hover:border-white/30 transition-all relative flex flex-col shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
+                                    <div className="h-48 relative overflow-hidden bg-white/30 dark:bg-black/20 transition-colors flex items-center justify-center">
+                                        {s.imageUrl ? (
+                                            <>
+                                                <img src={api.defaults.baseURL?.replace('/api', '') + s.imageUrl} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent dark:from-[#0f172a] dark:to-transparent" />
+                                            </>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 opacity-60">
+                                                <Car className="w-12 h-12 mb-2" />
+                                                <span className="text-xs font-bold uppercase tracking-wider">Sem Imagem</span>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div>
-                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-0.5 transition-colors">{s.name}</h3>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 transition-colors"><Users className="w-3 h-3" /> Até {s.capacity} passageiros</p>
+                                    <div className="flex-1 p-6 relative z-10 flex flex-col">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1 transition-colors drop-shadow-sm">{s.name}</h3>
+                                                <div className="text-sm font-bold text-teal-800 dark:text-teal-300 transition-colors drop-shadow-sm">{s.vehicleType}</div>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 bg-white/40 dark:bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/50 dark:border-white/20 transition-colors shadow-sm">
+                                                <Users className="w-4 h-4 text-slate-700 dark:text-slate-200 transition-colors" />
+                                                <span className="text-sm font-bold text-slate-900 dark:text-white transition-colors">Até {s.capacity}</span>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-slate-700 dark:text-slate-200 font-medium line-clamp-2 transition-colors drop-shadow-sm">{s.description || 'Veículo de transfer moderno e confortável preparado para viagens.'}</p>
                                     </div>
                                 </div>
                             ))}

@@ -10,14 +10,14 @@ import 'flatpickr/dist/flatpickr.css';
 const heroVehicles = ['/CarOne.webp', '/CarTwo.webp', '/CarThree.webp', '/CarFour.webp'];
 
 export default function Home() {
-    
+
 
     const { data: vehicles } = useQuery({
         queryKey: ['featuredVehicles'],
         queryFn: () => api.get('/vehicles?limit=6').then((r) => r.data),
     });
 
-    
+
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -114,9 +114,9 @@ export default function Home() {
                             {/* Search Box */}
                             <form onSubmit={handleSearch} className="bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md rounded-2xl p-6 animate-fade-in-up transition-colors shadow-xl shadow-slate-200/50 dark:shadow-none" style={{ animationDelay: '0.3s' }}>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                                    
-                                    
-                                    
+
+
+
                                 </div>
                                 <button
                                     type="submit"
@@ -229,22 +229,39 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="py-20 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 transition-colors duration-300">
-                <div className="max-w-4xl mx-auto px-4 text-center">
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-900 dark:text-white transition-colors">
-                        Precisa de um <span className="bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent">transfer</span>?
+            {/* Extravagant VIP Transfer CTA */}
+            <section className="relative py-24 sm:py-32 overflow-hidden transition-colors duration-500 bg-slate-50 dark:bg-[#0a0d18]">
+                {/* Image Overlay */}
+                <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
+                    <img src="/van.png" alt="Transfer Service" className="w-[1000px] xl:w-[1200px] object-contain opacity-20 dark:opacity-30 mix-blend-luminosity filter saturate-50 drop-shadow-2xl scale-110 md:scale-100" />
+                    {/* Fading gradients so the image blends smoothly onto edges */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-slate-50 dark:from-[#0a0d18] dark:via-transparent dark:to-[#0a0d18] transition-colors duration-500"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-transparent to-slate-50 dark:from-[#0a0d18] dark:via-transparent dark:to-[#0a0d18] transition-colors duration-500"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-500/5 dark:from-teal-500/10 via-transparent to-transparent transition-colors duration-500"></div>
+
+                    {/* Glows */}
+                    <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-teal-500/5 dark:bg-teal-500/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen transition-colors duration-500"></div>
+                    <div className="absolute bottom-1/4 -left-[200px] w-[600px] h-[600px] bg-cyan-500/5 dark:bg-cyan-500/10 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen transition-colors duration-500"></div>
+                </div>
+
+                <div className="max-w-4xl mx-auto px-4 text-center relative z-10 block">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-white/10 backdrop-blur-md border border-white/50 dark:border-white/20 text-teal-800 dark:text-teal-300 font-bold text-sm mb-6 animate-fade-in-up transition-colors duration-500 shadow-sm">
+                        <ArrowLeftRight className="w-4 h-4" />
+                        Serviço VIP
+                    </div>
+                    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 text-slate-900 dark:text-white drop-shadow-sm transition-colors duration-500">
+                        Precisa de um <span className="bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-300 bg-clip-text text-transparent drop-shadow-sm">transfer</span>?
                     </h2>
-                    <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-xl mx-auto transition-colors">
+                    <p className="text-lg text-slate-700 dark:text-slate-300 font-medium mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-sm transition-colors duration-500">
                         Oferecemos serviços de transfer com motorista profissional em todo Moçambique.
-                        Do aeroporto ao hotel, praia ou qualquer destino.
+                        Do aeroporto ao hotel, praia ou qualquer outro destino com luxo e exclusividade.
                     </p>
                     <Link
                         to="/transfers"
-                        className="inline-flex items-center justify-center gap-2 px-8 py-4 w-full sm:w-auto rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 dark:hover:from-teal-400 dark:hover:to-cyan-400 transition-all shadow-lg shadow-teal-500/25"
+                        className="inline-flex items-center justify-center gap-3 px-8 py-4 sm:px-10 sm:py-5 w-full sm:w-auto rounded-2xl bg-white/40 dark:bg-white/10 backdrop-blur-md text-teal-800 dark:text-white font-bold text-lg hover:bg-gradient-to-r hover:from-teal-500 hover:to-cyan-500 hover:text-white dark:hover:from-teal-500 dark:hover:to-cyan-500 transition-all group border border-white/50 dark:border-white/20 hover:border-transparent shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] hover:shadow-[0_8px_32px_0_rgba(20,184,166,0.2)]"
                     >
-                        <ArrowLeftRight className="w-5 h-5" />
                         Ver Transfers Disponíveis
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </div>
             </section>

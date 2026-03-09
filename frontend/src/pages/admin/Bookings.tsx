@@ -320,171 +320,263 @@ export default function AdminBookings() {
                         {[1, 2, 3, 4, 5].map(i => <div key={i} className="skeleton h-20 rounded-xl" />)}
                     </div>
                 ) : (
-                    <div className="overflow-x-auto pb-2">
-                        <table className="w-full text-sm min-w-[900px] whitespace-nowrap">
-                            <thead>
-                                <tr className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider bg-slate-50 dark:bg-slate-900/50">
-                                    <th className="text-left py-4 px-6 font-semibold">Reserva</th>
-                                    <th className="text-left py-4 px-4 font-semibold">Cliente</th>
-                                    <th className="text-left py-4 px-4 font-semibold">Tipo</th>
-                                    <th className="text-left py-4 px-4 font-semibold">Detalhe</th>
-                                    <th className="text-left py-4 px-4 font-semibold">Período</th>
-                                    <th className="text-right py-4 px-4 font-semibold">Valor</th>
-                                    <th className="text-center py-4 px-4 font-semibold">Status</th>
-                                    <th className="text-center py-4 px-6 font-semibold">Acções</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredData?.map((b: AdminBooking) => {
-                                    const st = statusConfig[b.status] || statusConfig.PENDING;
-                                    const isVehicle = b.type === 'VEHICLE';
-                                    return (
-                                        <tr key={b.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-white/[0.03] transition-all group relative">
-                                            <td className="py-4 px-6 relative">
-                                                {/* Row left glow indicator */}
-                                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-400 font-mono bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-md border border-slate-200 dark:border-white/5 group-hover:border-cyan-500/30 group-hover:text-cyan-400 transition-colors">#{b.id}</span>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-cyan-500/20 flex items-center justify-center text-sm font-bold text-cyan-400 shrink-0 shadow-lg group-hover:scale-110 transition-transform">
-                                                        {b.user?.name?.charAt(0)?.toUpperCase()}
+                    <>
+                        {/* Desktop Table */}
+                        <div className="overflow-x-auto pb-2 hidden lg:block">
+                            <table className="w-full text-sm min-w-[900px] whitespace-nowrap">
+                                <thead>
+                                    <tr className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider bg-slate-50 dark:bg-slate-900/50">
+                                        <th className="text-left py-4 px-6 font-semibold">Reserva</th>
+                                        <th className="text-left py-4 px-4 font-semibold">Cliente</th>
+                                        <th className="text-left py-4 px-4 font-semibold">Tipo</th>
+                                        <th className="text-left py-4 px-4 font-semibold">Detalhe</th>
+                                        <th className="text-left py-4 px-4 font-semibold">Período</th>
+                                        <th className="text-right py-4 px-4 font-semibold">Valor</th>
+                                        <th className="text-center py-4 px-4 font-semibold">Status</th>
+                                        <th className="text-center py-4 px-6 font-semibold">Acções</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredData?.map((b: AdminBooking) => {
+                                        const st = statusConfig[b.status] || statusConfig.PENDING;
+                                        const isVehicle = b.type === 'VEHICLE';
+                                        return (
+                                            <tr key={b.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-white/[0.03] transition-all group relative">
+                                                <td className="py-4 px-6 relative">
+                                                    {/* Row left glow indicator */}
+                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                    <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-400 font-mono bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-md border border-slate-200 dark:border-white/5 group-hover:border-cyan-500/30 group-hover:text-cyan-400 transition-colors">#{b.id}</span>
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-cyan-500/20 flex items-center justify-center text-sm font-bold text-cyan-400 shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                                                            {b.user?.name?.charAt(0)?.toUpperCase()}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="font-semibold text-sm truncate max-w-[140px] group-hover:text-cyan-400 transition-colors">{b.user?.name}</p>
+                                                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">{b.user?.phone}</p>
+                                                        </div>
                                                     </div>
-                                                    <div className="min-w-0">
-                                                        <p className="font-semibold text-sm truncate max-w-[140px] group-hover:text-cyan-400 transition-colors">{b.user?.name}</p>
-                                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">{b.user?.phone}</p>
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${isVehicle ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'bg-violet-500/10 text-violet-400 border-violet-500/20'
+                                                        }`}>
+                                                        {isVehicle ? (
+                                                            b.vehicleBooking?.vehicle?.images?.[0]?.url ? (
+                                                                <img src={b.vehicleBooking.vehicle.images[0].url} alt="" className="w-4 h-4 rounded-full object-cover ring-1 ring-white/20 shadow-sm" />
+                                                            ) : <Car className="w-3.5 h-3.5" />
+                                                        ) : <ArrowLeftRight className="w-3.5 h-3.5" />}
+                                                        {isVehicle ? 'Viatura' : 'Transfer'}
+                                                    </span>
+                                                </td>
+                                                <td className="py-4 px-4 text-slate-600 dark:text-slate-300 text-sm max-w-[160px] truncate font-medium">
+                                                    {isVehicle
+                                                        ? `${b.vehicleBooking?.vehicle?.brand} ${b.vehicleBooking?.vehicle?.model}`
+                                                        : `${b.transferBooking?.origin} → ${b.transferBooking?.destination}`
+                                                    }
+                                                </td>
+                                                <td className="py-4 px-4 text-xs">
+                                                    <div className="flex flex-col gap-1">
+                                                        {isVehicle && b.vehicleBooking ? (
+                                                            <>
+                                                                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+                                                                    <Calendar className="w-3.5 h-3.5 text-teal-500" />
+                                                                    {new Date(b.vehicleBooking.startDate).toLocaleDateString('pt-MZ')}
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 dark:text-slate-400">
+                                                                    <Clock className="w-3.5 h-3.5 text-cyan-500" />
+                                                                    {new Date(b.vehicleBooking.endDate).toLocaleDateString('pt-MZ')}
+                                                                </div>
+                                                            </>
+                                                        ) : b.transferBooking ? (
+                                                            <>
+                                                                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+                                                                    <Calendar className="w-3.5 h-3.5 text-violet-500" />
+                                                                    {new Date(b.transferBooking.travelDate).toLocaleDateString('pt-MZ')}
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 dark:text-slate-400">
+                                                                    <Clock className="w-3.5 h-3.5 text-violet-400" />
+                                                                    {b.transferBooking.travelTime || '--:--'}
+                                                                </div>
+                                                            </>
+                                                        ) : null}
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${isVehicle ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'bg-violet-500/10 text-violet-400 border-violet-500/20'
-                                                    }`}>
-                                                    {isVehicle ? (
-                                                        b.vehicleBooking?.vehicle?.images?.[0]?.url ? (
-                                                            <img src={b.vehicleBooking.vehicle.images[0].url} alt="" className="w-4 h-4 rounded-full object-cover ring-1 ring-white/20 shadow-sm" />
-                                                        ) : <Car className="w-3.5 h-3.5" />
-                                                    ) : <ArrowLeftRight className="w-3.5 h-3.5" />}
-                                                    {isVehicle ? 'Viatura' : 'Transfer'}
-                                                </span>
-                                            </td>
-                                            <td className="py-4 px-4 text-slate-600 dark:text-slate-300 text-sm max-w-[160px] truncate font-medium">
-                                                {isVehicle
-                                                    ? `${b.vehicleBooking?.vehicle?.brand} ${b.vehicleBooking?.vehicle?.model}`
-                                                    : `${b.transferBooking?.origin} → ${b.transferBooking?.destination}`
-                                                }
-                                            </td>
-                                            <td className="py-4 px-4 text-xs">
-                                                <div className="flex flex-col gap-1">
-                                                    {isVehicle && b.vehicleBooking ? (
-                                                        <>
-                                                            <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                                                                <Calendar className="w-3.5 h-3.5 text-teal-500" />
-                                                                {new Date(b.vehicleBooking.startDate).toLocaleDateString('pt-MZ')}
-                                                            </div>
-                                                            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 dark:text-slate-400">
-                                                                <Clock className="w-3.5 h-3.5 text-cyan-500" />
-                                                                {new Date(b.vehicleBooking.endDate).toLocaleDateString('pt-MZ')}
-                                                            </div>
-                                                        </>
-                                                    ) : b.transferBooking ? (
-                                                        <>
-                                                            <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                                                                <Calendar className="w-3.5 h-3.5 text-violet-500" />
-                                                                {new Date(b.transferBooking.travelDate).toLocaleDateString('pt-MZ')}
-                                                            </div>
-                                                            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 dark:text-slate-400">
-                                                                <Clock className="w-3.5 h-3.5 text-violet-400" />
-                                                                {b.transferBooking.travelTime || '--:--'}
-                                                            </div>
-                                                        </>
-                                                    ) : null}
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4 text-right">
-                                                <span className="font-bold text-teal-400 text-sm drop-shadow-sm">{formatPrice(b.totalPrice)}</span>
-                                                <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-1 font-medium">MT</span>
-                                            </td>
-                                            <td className="py-4 px-4 text-center">
-                                                <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border shadow-sm ${st.bg} ${st.color}`}>
-                                                    {st.label}
-                                                </span>
-                                            </td>
-                                            <td className="py-4 px-6">
-                                                <div className="flex items-center justify-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity">
-                                                    {/* View Detail */}
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedBooking(b);
-                                                            if (b.type === 'TRANSFER' && b.status === 'PENDING') {
-                                                                setTransferPriceInput(b.totalPrice > 0 ? String(b.totalPrice) : '');
-                                                            }
-                                                        }}
-                                                        className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-cyan-500/10 text-slate-500 dark:text-slate-400 dark:text-slate-400 hover:text-cyan-400 transition-all border border-slate-200 dark:border-white/5 hover:border-cyan-500/30 shadow-sm"
-                                                        title="Ver detalhes"
-                                                    >
-                                                        <Eye className="w-4 h-4" />
-                                                    </button>
-                                                    {b.status === 'PENDING' && (
-                                                        <>
-                                                            <button
-                                                                onClick={() => updateStatus.mutate({ id: b.id, status: 'CONFIRMED' })}
-                                                                className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-xs hover:bg-emerald-500 border border-emerald-500/20 hover:text-slate-900 dark:text-white transition-all shadow-sm font-semibold flex items-center gap-1.5"
-                                                                title="Confirmar Reserva"
-                                                            >
-                                                                <CheckCircle className="w-3.5 h-3.5" />
-                                                                Aprovar
-                                                            </button>
-                                                            <button
-                                                                onClick={() => updateStatus.mutate({ id: b.id, status: 'CANCELLED' })}
-                                                                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-red-500/10 text-slate-500 dark:text-slate-400 dark:text-slate-400 hover:text-red-400 transition-all border border-slate-200 dark:border-white/5 hover:border-red-500/30 shadow-sm"
-                                                                title="Rejeitar/Cancelar"
-                                                            >
-                                                                <XCircle className="w-4 h-4" />
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                    {b.status === 'CONFIRMED' && (
-                                                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium italic bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-md border border-slate-200 dark:border-white/5">Espera Pgto.</span>
-                                                    )}
-                                                    {b.status === 'PAID' && (
-                                                        <span className="text-[10px] text-yellow-400 font-semibold bg-yellow-500/10 px-2.5 py-1 rounded-md border border-yellow-500/20 cursor-pointer animate-pulse" onClick={() => setSelectedBooking(b)}>Ver Pgto →</span>
-                                                    )}
-                                                    {b.status === 'AWAITING_DELIVERY' && (
+                                                </td>
+                                                <td className="py-4 px-4 text-right">
+                                                    <span className="font-bold text-teal-400 text-sm drop-shadow-sm">{formatPrice(b.totalPrice)}</span>
+                                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-1 font-medium">MT</span>
+                                                </td>
+                                                <td className="py-4 px-4 text-center">
+                                                    <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border shadow-sm ${st.bg} ${st.color}`}>
+                                                        {st.label}
+                                                    </span>
+                                                </td>
+                                                <td className="py-4 px-6">
+                                                    <div className="flex items-center justify-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity">
+                                                        {/* View Detail */}
                                                         <button
-                                                            onClick={() => updateStatus.mutate({ id: b.id, status: 'DELIVERED' })}
-                                                            className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-400 text-xs hover:bg-purple-500 hover:text-slate-900 dark:text-white transition-all shadow-sm font-semibold border border-purple-500/30 flex items-center gap-1"
+                                                            onClick={() => {
+                                                                setSelectedBooking(b);
+                                                                if (b.type === 'TRANSFER' && b.status === 'PENDING') {
+                                                                    setTransferPriceInput(b.totalPrice > 0 ? String(b.totalPrice) : '');
+                                                                }
+                                                            }}
+                                                            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-cyan-500/10 text-slate-500 dark:text-slate-400 dark:text-slate-400 hover:text-cyan-400 transition-all border border-slate-200 dark:border-white/5 hover:border-cyan-500/30 shadow-sm"
+                                                            title="Ver detalhes"
                                                         >
-                                                            Entregar
+                                                            <Eye className="w-4 h-4" />
                                                         </button>
-                                                    )}
-                                                    {b.status === 'DELIVERED' && (
-                                                        <button
-                                                            onClick={() => updateStatus.mutate({ id: b.id, status: 'COMPLETED' })}
-                                                            className="px-3 py-1.5 rounded-xl bg-cyan-500/10 text-cyan-400 text-xs hover:bg-cyan-500 hover:text-slate-900 dark:text-white transition-all shadow-sm font-semibold border border-cyan-500/30 flex items-center gap-1"
-                                                        >
-                                                            Devolução
-                                                        </button>
-                                                    )}
+                                                        {b.status === 'PENDING' && (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => updateStatus.mutate({ id: b.id, status: 'CONFIRMED' })}
+                                                                    className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-xs hover:bg-emerald-500 border border-emerald-500/20 hover:text-slate-900 dark:text-white transition-all shadow-sm font-semibold flex items-center gap-1.5"
+                                                                    title="Confirmar Reserva"
+                                                                >
+                                                                    <CheckCircle className="w-3.5 h-3.5" />
+                                                                    Aprovar
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => updateStatus.mutate({ id: b.id, status: 'CANCELLED' })}
+                                                                    className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-red-500/10 text-slate-500 dark:text-slate-400 dark:text-slate-400 hover:text-red-400 transition-all border border-slate-200 dark:border-white/5 hover:border-red-500/30 shadow-sm"
+                                                                    title="Rejeitar/Cancelar"
+                                                                >
+                                                                    <XCircle className="w-4 h-4" />
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                        {b.status === 'CONFIRMED' && (
+                                                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium italic bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-md border border-slate-200 dark:border-white/5">Espera Pgto.</span>
+                                                        )}
+                                                        {b.status === 'PAID' && (
+                                                            <span className="text-[10px] text-yellow-400 font-semibold bg-yellow-500/10 px-2.5 py-1 rounded-md border border-yellow-500/20 cursor-pointer animate-pulse" onClick={() => setSelectedBooking(b)}>Ver Pgto →</span>
+                                                        )}
+                                                        {b.status === 'AWAITING_DELIVERY' && (
+                                                            <button
+                                                                onClick={() => updateStatus.mutate({ id: b.id, status: 'DELIVERED' })}
+                                                                className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-400 text-xs hover:bg-purple-500 hover:text-slate-900 dark:text-white transition-all shadow-sm font-semibold border border-purple-500/30 flex items-center gap-1"
+                                                            >
+                                                                Entregar
+                                                            </button>
+                                                        )}
+                                                        {b.status === 'DELIVERED' && (
+                                                            <button
+                                                                onClick={() => updateStatus.mutate({ id: b.id, status: 'COMPLETED' })}
+                                                                className="px-3 py-1.5 rounded-xl bg-cyan-500/10 text-cyan-400 text-xs hover:bg-cyan-500 hover:text-slate-900 dark:text-white transition-all shadow-sm font-semibold border border-cyan-500/30 flex items-center gap-1"
+                                                            >
+                                                                Devolução
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+
+                                    {filteredData?.length === 0 && (
+                                        <tr>
+                                            <td colSpan={8} className="py-20 text-center">
+                                                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4 border border-white/10">
+                                                    <Calendar className="w-8 h-8 text-slate-500 dark:text-slate-400" />
                                                 </div>
+                                                <p className="text-slate-600 dark:text-slate-300 font-bold text-lg">Nenhuma reserva localizada</p>
+                                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">Tente ajustar os filtros de estado ou altere os seus termos de pesquisa para encontrar o que procura.</p>
                                             </td>
                                         </tr>
-                                    );
-                                })}
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
 
-                                {filteredData?.length === 0 && (
-                                    <tr>
-                                        <td colSpan={8} className="py-20 text-center">
-                                            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4 border border-white/10">
-                                                <Calendar className="w-8 h-8 text-slate-500 dark:text-slate-400" />
+                        {/* Mobile Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 lg:hidden">
+                            {filteredData?.map((b: AdminBooking) => {
+                                const st = statusConfig[b.status] || statusConfig.PENDING;
+                                const isVehicle = b.type === 'VEHICLE';
+                                return (
+                                    <div key={b.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-white/5 p-5 space-y-4 hover:border-cyan-500/30 transition-all flex flex-col relative overflow-hidden group shadow-sm">
+                                        {/* Status and Type Header */}
+                                        <div className="flex items-center justify-between">
+                                            <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border shadow-sm ${st.bg} ${st.color}`}>
+                                                {st.label}
+                                            </span>
+                                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-xs font-semibold border ${isVehicle ? 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20'}`}>
+                                                {isVehicle ? <Car className="w-3.5 h-3.5" /> : <ArrowLeftRight className="w-3.5 h-3.5" />}
+                                                {isVehicle ? 'Viatura' : 'Transfer'}
+                                            </span>
+                                        </div>
+
+                                        {/* Info section */}
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-cyan-500/20 flex items-center justify-center text-sm font-bold text-cyan-600 dark:text-cyan-400 shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                                                {b.user?.name?.charAt(0)?.toUpperCase()}
                                             </div>
-                                            <p className="text-slate-600 dark:text-slate-300 font-bold text-lg">Nenhuma reserva localizada</p>
-                                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">Tente ajustar os filtros de estado ou altere os seus termos de pesquisa para encontrar o que procura.</p>
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between">
+                                                    <p className="font-semibold text-sm truncate text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">{b.user?.name}</p>
+                                                    <span className="text-xs text-slate-500 font-mono">#{b.id}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
+                                                    {isVehicle
+                                                        ? `${b.vehicleBooking?.vehicle?.brand} ${b.vehicleBooking?.vehicle?.model}`
+                                                        : `${b.transferBooking?.origin} → ${b.transferBooking?.destination}`
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Dates */}
+                                        <div className="pt-3 border-t border-slate-200 dark:border-white/5 text-xs text-slate-500 dark:text-slate-400 flex justify-between items-center">
+                                            {isVehicle && b.vehicleBooking ? (
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-teal-600 dark:text-teal-500" /> {new Date(b.vehicleBooking.startDate).toLocaleDateString('pt-MZ')}</span>
+                                                    <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-500" /> {new Date(b.vehicleBooking.endDate).toLocaleDateString('pt-MZ')}</span>
+                                                </div>
+                                            ) : b.transferBooking ? (
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-violet-600 dark:text-violet-500" /> {new Date(b.transferBooking.travelDate).toLocaleDateString('pt-MZ')}</span>
+                                                    <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400" /> {b.transferBooking.travelTime || '--:--'}</span>
+                                                </div>
+                                            ) : <div></div>}
+                                            <div className="text-right">
+                                                <p className="font-bold text-teal-600 dark:text-teal-500 text-sm drop-shadow-sm">{formatPrice(b.totalPrice)} <span className="text-[10px]">MT</span></p>
+                                            </div>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="pt-3 border-t border-slate-200 dark:border-white/5 flex items-center justify-between gap-2 mt-auto">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedBooking(b);
+                                                    if (b.type === 'TRANSFER' && b.status === 'PENDING') {
+                                                        setTransferPriceInput(b.totalPrice > 0 ? String(b.totalPrice) : '');
+                                                    }
+                                                }}
+                                                className="flex-1 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500/10 text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-all border border-slate-200 dark:border-white/5 text-xs font-semibold flex items-center justify-center gap-1.5"
+                                            >
+                                                <Eye className="w-3.5 h-3.5" /> Detalhes
+                                            </button>
+                                            {b.status === 'PENDING' && (
+                                                <div className="flex gap-2">
+                                                    <button onClick={() => updateStatus.mutate({ id: b.id, status: 'CONFIRMED' })} className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors border border-emerald-500/20" title="Aprovar"><CheckCircle className="w-4 h-4" /></button>
+                                                    <button onClick={() => updateStatus.mutate({ id: b.id, status: 'CANCELLED' })} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 dark:text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors border border-red-500/20" title="Rejeitar"><XCircle className="w-4 h-4" /></button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+                            {filteredData?.length === 0 && (
+                                <div className="col-span-1 sm:col-span-2 py-10 text-center">
+                                    <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4 border border-slate-200 dark:border-white/10">
+                                        <Calendar className="w-8 h-8 text-slate-500 dark:text-slate-400" />
+                                    </div>
+                                    <p className="text-slate-600 dark:text-slate-300 font-bold text-lg">Nenhuma reserva localizada</p>
+                                </div>
+                            )}
+                        </div>
+                    </>
                 )}
             </div>
 

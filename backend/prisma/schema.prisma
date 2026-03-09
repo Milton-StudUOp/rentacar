@@ -75,10 +75,11 @@ model Vehicle {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  images       VehicleImage[]
-  regions      VehicleRegion[]
-  availability VehicleAvailability[]
-  bookings     VehicleBooking[]
+  images            VehicleImage[]
+  regions           VehicleRegion[]
+  availability      VehicleAvailability[]
+  bookings          VehicleBooking[]
+  corporateRequests CorporateRequest[]
 
   @@map("vehicles")
 }
@@ -207,4 +208,37 @@ model Notification {
   createdAt DateTime @default(now())
 
   @@map("notifications")
+}
+
+enum CorporateRequestPeriod {
+  DAYS
+  MONTHS
+  YEARS
+}
+
+enum CorporateRequestStatus {
+  PENDING
+  QUOTED
+  REJECTED
+  COMPLETED
+}
+
+model CorporateRequest {
+  id             Int                    @id @default(autoincrement())
+  companyName    String                 @db.VarChar(255)
+  contactName    String                 @db.VarChar(255)
+  email          String                 @db.VarChar(191)
+  phone          String                 @db.VarChar(50)
+  vehicleId      Int
+  quantity       Int                    @default(1)
+  periodType     CorporateRequestPeriod
+  periodDuration Int
+  status         CorporateRequestStatus @default(PENDING)
+  notes          String?                @db.Text
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+
+  @@map("corporate_requests")
 }

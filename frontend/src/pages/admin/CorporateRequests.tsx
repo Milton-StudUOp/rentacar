@@ -1,13 +1,36 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../lib/api';
-import { Search, Loader2, Building2, User, Phone, Mail, Car, Save, Trash2, X } from 'lucide-react';
+import { Search, Loader2, Building2, Mail, Car, Save, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+interface CorporateRequest {
+    id: number;
+    companyName: string;
+    contactName: string;
+    phone: string;
+    email: string;
+    vehicleCategory: string;
+    expectedDuration: number;
+    expectedPeriod: string;
+    status: string;
+    notes: string | null;
+    createdAt: string;
+    vehicle?: {
+        brand: string;
+        model: string;
+        category: string;
+        images: Array<{ url: string }>;
+    };
+    quantity?: number;
+    periodDuration?: number;
+    periodType?: string;
+}
 
 export default function AdminCorporateRequests() {
     const queryClient = useQueryClient();
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedRequest, setSelectedRequest] = useState<any>(null);
+    const [selectedRequest, setSelectedRequest] = useState<CorporateRequest | null>(null);
     const [statusFilter, setStatusFilter] = useState('ALL');
 
     const { data: requests, isLoading } = useQuery({
@@ -55,7 +78,8 @@ export default function AdminCorporateRequests() {
         }
     };
 
-    const getPeriodLabel = (period: string) => {
+    const getPeriodLabel = (period?: string) => {
+        if (!period) return '';
         switch (period) {
             case 'DAYS': return 'Dias';
             case 'MONTHS': return 'Meses';
@@ -65,7 +89,7 @@ export default function AdminCorporateRequests() {
     };
 
     // Filter Logic
-    const filteredRequests = requests?.filter((req: any) => {
+    const filteredRequests = requests?.filter((req: CorporateRequest) => {
         const matchesSearch =
             req.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             req.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -80,32 +104,48 @@ export default function AdminCorporateRequests() {
     }
 
     return (
-        <div className="p-4 md:p-8 pb-24 md:pb-8 animate-fade-in">
+        <div className="space-y-6">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">Corporate & Frota</h1>
-                    <p className="text-slate-400 mt-1">Gestão de leads e cotações para empresas</p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
+                <div className="animate-fade-in-up">
+                    <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-2">
+                        Corporate & <span className="gradient-text">Frota</span>
+                    </h1>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm md:text-lg">Gestão de leads e cotações para empresas</p>
                 </div>
             </div>
 
             {/* Quick Stats & Filters */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div onClick={() => setStatusFilter('ALL')} className={`cursor-pointer glass rounded-2xl p-5 border-l-4 ${statusFilter === 'ALL' ? 'border-l-indigo-500 bg-white/10' : 'border-l-slate-700 hover:bg-white/5'} transition-colors`}>
-                    <p className="text-sm text-slate-400 font-medium">Todos</p>
-                    <p className="text-2xl font-bold text-white mt-1">{requests?.length || 0}</p>
+                <div onClick={() => setStatusFilter('ALL')} className={`cursor-pointer group p-5 rounded-2xl border transition-all duration-300 ${statusFilter === 'ALL' ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 hover:border-indigo-500/30'}`}>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Todos</p>
+                    <div className="flex items-end justify-between mt-2">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white">{requests?.length || 0}</p>
+                        <Building2 className={`w-8 h-8 ${statusFilter === 'ALL' ? 'text-indigo-400' : 'text-slate-300 dark:text-slate-700'} opacity-50 group-hover:scale-110 transition-transform`} />
+                    </div>
                 </div>
-                <div onClick={() => setStatusFilter('PENDING')} className={`cursor-pointer glass rounded-2xl p-5 border-l-4 ${statusFilter === 'PENDING' ? 'border-l-amber-500 bg-amber-500/10' : 'border-l-slate-700 hover:bg-amber-500/5'} transition-colors`}>
-                    <p className="text-sm text-slate-400 font-medium">Pendentes</p>
-                    <p className="text-2xl font-bold text-white mt-1">{requests?.filter((r: any) => r.status === 'PENDING').length || 0}</p>
+                <div onClick={() => setStatusFilter('PENDING')} className={`cursor-pointer group p-5 rounded-2xl border transition-all duration-300 ${statusFilter === 'PENDING' ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 hover:border-amber-500/30'}`}>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pendentes</p>
+                    <div className="flex items-end justify-between mt-2">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white">{requests?.filter((r: CorporateRequest) => r.status === 'PENDING').length || 0}</p>
+                        <Loader2 className={`w-8 h-8 ${statusFilter === 'PENDING' ? 'text-amber-400' : 'text-slate-300 dark:text-slate-700'} opacity-50 group-hover:scale-110 transition-transform`} />
+                    </div>
                 </div>
-                <div onClick={() => setStatusFilter('QUOTED')} className={`cursor-pointer glass rounded-2xl p-5 border-l-4 ${statusFilter === 'QUOTED' ? 'border-l-blue-500 bg-blue-500/10' : 'border-l-slate-700 hover:bg-blue-500/5'} transition-colors`}>
-                    <p className="text-sm text-slate-400 font-medium">Cotados</p>
-                    <p className="text-2xl font-bold text-white mt-1">{requests?.filter((r: any) => r.status === 'QUOTED').length || 0}</p>
+
+                <div onClick={() => setStatusFilter('QUOTED')} className={`cursor-pointer group p-5 rounded-2xl border transition-all duration-300 ${statusFilter === 'QUOTED' ? 'bg-blue-500/10 border-blue-500/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 hover:border-blue-500/30'}`}>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cotados</p>
+                    <div className="flex items-end justify-between mt-2">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white">{requests?.filter((r: CorporateRequest) => r.status === 'QUOTED').length || 0}</p>
+                        <Mail className={`w-8 h-8 ${statusFilter === 'QUOTED' ? 'text-blue-400' : 'text-slate-300 dark:text-slate-700'} opacity-50 group-hover:scale-110 transition-transform`} />
+                    </div>
                 </div>
-                <div onClick={() => setStatusFilter('COMPLETED')} className={`cursor-pointer glass rounded-2xl p-5 border-l-4 ${statusFilter === 'COMPLETED' ? 'border-l-green-500 bg-green-500/10' : 'border-l-slate-700 hover:bg-green-500/5'} transition-colors`}>
-                    <p className="text-sm text-slate-400 font-medium">Convertidos</p>
-                    <p className="text-2xl font-bold text-white mt-1">{requests?.filter((r: any) => r.status === 'COMPLETED').length || 0}</p>
+
+                <div onClick={() => setStatusFilter('COMPLETED')} className={`cursor-pointer group p-5 rounded-2xl border transition-all duration-300 ${statusFilter === 'COMPLETED' ? 'bg-green-500/10 border-green-500/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 hover:border-green-500/30'}`}>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Convertidos</p>
+                    <div className="flex items-end justify-between mt-2">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white">{requests?.filter((r: CorporateRequest) => r.status === 'COMPLETED').length || 0}</p>
+                        <Save className={`w-8 h-8 ${statusFilter === 'COMPLETED' ? 'text-green-400' : 'text-slate-300 dark:text-slate-700'} opacity-50 group-hover:scale-110 transition-transform`} />
+                    </div>
                 </div>
             </div>
 
@@ -118,212 +158,252 @@ export default function AdminCorporateRequests() {
                         placeholder="Procurar por empresa ou contacto..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                        className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-cyan-500 transition-all shadow-sm"
                     />
                 </div>
             </div>
 
-            {/* Grid of Leads */}
-            {filteredRequests.length === 0 ? (
-                <div className="glass rounded-3xl p-12 text-center text-slate-400">
-                    <Building2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-xl font-medium text-white mb-2">Nenhum pedido encontrado</p>
-                    <p>Experimente pesquisar com outros termos ou remover os filtros.</p>
+            {/* Data Source Display */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl shadow-xl overflow-hidden transition-colors">
+                <div className="hidden lg:block overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+                                <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Empresa</th>
+                                <th className="py-5 px-4 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Viatura</th>
+                                <th className="py-5 px-4 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Plano</th>
+                                <th className="py-5 px-4 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] text-center">Estado</th>
+                                <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                            {filteredRequests.map((req: CorporateRequest) => (
+                                <tr key={req.id} className="group hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                                    <td className="py-4 px-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
+                                                <Building2 className="w-5 h-5" />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-bold text-slate-900 dark:text-white truncate">{req.companyName}</p>
+                                                <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">{req.contactName}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap">
+                                        <div className="flex items-center gap-2">
+                                            <Car className="w-4 h-4 text-cyan-500" /> {req.vehicle?.brand} {req.vehicle?.model}
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-300">
+                                        <div className="flex flex-col">
+                                            <span className="font-bold">{req.quantity} uni.</span>
+                                            <span className="text-[10px] text-slate-500 uppercase tracking-tighter">{req.periodDuration} {getPeriodLabel(req.periodType)}</span>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4 text-center">
+                                        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${getStatusColor(req.status)}`}>
+                                            {getStatusLabel(req.status)}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-6 text-right">
+                                        <button onClick={() => setSelectedRequest(req)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-teal-500 hover:bg-teal-500/10 transition-all border border-transparent hover:border-teal-500/20 shadow-sm">
+                                            <Search className="w-4 h-4" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredRequests.map((req: any) => (
-                        <div key={req.id} onClick={() => setSelectedRequest(req)} className="glass rounded-2xl overflow-hidden cursor-pointer hover:border-cyan-500/30 transition-all group flex flex-col h-full bg-slate-900/50">
 
-                            {/* Card Header (Vehicle Background) */}
-                            <div className="h-32 relative bg-black/40">
-                                {req.vehicle?.images?.[0]?.url && (
-                                    <>
-                                        <img src={api.defaults.baseURL?.replace('/api', '') + req.vehicle.images[0].url} alt="Vehicle" className="w-full h-full object-cover opacity-50 grayscale-[20%] group-hover:scale-105 transition-transform duration-500" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
-                                    </>
-                                )}
-                                <div className="absolute top-4 right-4">
-                                    <span className={`px-3 py-1 text-xs font-bold rounded-full ${getStatusColor(req.status)} backdrop-blur-md`}>
-                                        {getStatusLabel(req.status)}
-                                    </span>
+                {/* Mobile Cards */}
+                <div className="lg:hidden divide-y divide-slate-100 dark:divide-white/5">
+                    {filteredRequests.map((req: CorporateRequest) => (
+                        <div key={req.id} onClick={() => setSelectedRequest(req)} className="p-5 flex flex-col gap-4 hover:bg-slate-50 dark:hover:bg-white/5 active:bg-slate-100 transition-colors cursor-pointer">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-600 dark:text-teal-400">
+                                        <Building2 className="w-5 h-5" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h3 className="font-bold text-slate-900 dark:text-white truncate max-w-[180px]">{req.companyName}</h3>
+                                        <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{req.contactName}</p>
+                                    </div>
                                 </div>
-                                <div className="absolute bottom-4 left-4 right-4">
-                                    <p className="text-white font-bold truncate flex items-center gap-2"><Car className="w-4 h-4 shrink-0 text-cyan-400" /> {req.vehicle?.brand} {req.vehicle?.model}</p>
-                                </div>
+                                <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase ${getStatusColor(req.status)}`}>
+                                    {getStatusLabel(req.status)}
+                                </span>
                             </div>
-
-                            {/* Card Body */}
-                            <div className="p-5 flex-1 flex flex-col">
-                                <h3 className="text-xl font-bold text-white mb-4 line-clamp-1">{req.companyName}</h3>
-
-                                <div className="space-y-3 mb-6 flex-1">
-                                    <div className="flex items-center gap-3 text-sm text-slate-300">
-                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0"><User className="w-4 h-4 text-slate-400" /></div>
-                                        <span className="truncate">{req.contactName}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-sm text-slate-300">
-                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0"><Phone className="w-4 h-4 text-slate-400" /></div>
-                                        <span>{req.phone}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-sm text-slate-300">
-                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0"><Mail className="w-4 h-4 text-slate-400" /></div>
-                                        <span className="truncate">{req.email}</span>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-2 mt-auto">
-                                    <div className="bg-white/5 rounded-lg p-2.5 text-center">
-                                        <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Quantidade</p>
-                                        <p className="text-white font-semibold">{req.quantity} uni.</p>
-                                    </div>
-                                    <div className="bg-white/5 rounded-lg p-2.5 text-center">
-                                        <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Duração</p>
-                                        <p className="text-white font-semibold">{req.periodDuration} {getPeriodLabel(req.periodType)}</p>
-                                    </div>
-                                </div>
+                            <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 px-1">
+                                <span className="flex items-center gap-1.5"><Car className="w-3.5 h-3.5 text-cyan-500" /> {req.vehicle?.model}</span>
+                                <span>{req.quantity} Viaturas</span>
+                                <span className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2 py-0.5 rounded text-[10px]">{req.periodDuration} {getPeriodLabel(req.periodType)}</span>
                             </div>
                         </div>
                     ))}
                 </div>
-            )}
+
+                {filteredRequests.length === 0 && (
+                    <div className="p-20 text-center text-slate-500">
+                        <Building2 className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                        <p className="text-lg font-bold text-slate-900 dark:text-white mb-1">Nenhum pedido encontrado</p>
+                        <p className="text-sm">Tente redefinir os seus termos de pesquisa.</p>
+                    </div>
+                )}
+            </div>
 
             {/* Modal de Gestão */}
             {selectedRequest && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedRequest(null)} />
-                    <div className="relative w-full max-w-3xl glass border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]">
-                        {/* Modal Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/5">
-                            <div>
-                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                                    <Building2 className="w-6 h-6 text-cyan-400" /> {selectedRequest.companyName}
-                                </h2>
-                                <p className="text-sm text-slate-400 mt-1">Submetido a {new Date(selectedRequest.createdAt).toLocaleString('pt-PT')}</p>
-                            </div>
-                            <button onClick={() => setSelectedRequest(null)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors">
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        {/* Modal Body */}
-                        <div className="p-6 overflow-y-auto space-y-6">
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Informação da Viatura Pedida */}
-                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
-                                    <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-wider mb-4">Interesse Mapeado</h3>
-                                    {selectedRequest.vehicle && (
-                                        <div className="flex gap-4">
-                                            {selectedRequest.vehicle.images?.[0]?.url ? (
-                                                <img src={api.defaults.baseURL?.replace('/api', '') + selectedRequest.vehicle.images[0].url} className="w-24 h-24 object-cover rounded-xl border border-white/10" />
-                                            ) : (
-                                                <div className="w-24 h-24 bg-white/5 rounded-xl flex items-center justify-center border border-white/10"><Car className="w-8 h-8 text-slate-500" /></div>
-                                            )}
-                                            <div>
-                                                <p className="font-bold text-white text-lg">{selectedRequest.vehicle.brand} {selectedRequest.vehicle.model}</p>
-                                                <span className="inline-block mt-2 px-2.5 py-1 bg-white/10 text-xs font-semibold rounded-md text-slate-300">{selectedRequest.vehicle.category}</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                    <div className="grid grid-cols-2 gap-4 mt-6">
-                                        <div>
-                                            <label className="text-xs text-slate-500 uppercase font-bold">Unidades Escudo</label>
-                                            <p className="text-white font-medium text-lg mt-0.5">{selectedRequest.quantity} <span className="text-sm text-slate-400">viaturas</span></p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs text-slate-500 uppercase font-bold">Período Previsto</label>
-                                            <p className="text-white font-medium text-lg mt-0.5">{selectedRequest.periodDuration} <span className="text-sm text-slate-400">{getPeriodLabel(selectedRequest.periodType)}</span></p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Dados da Empresa */}
-                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5 space-y-4">
-                                    <h3 className="text-sm font-bold text-amber-500 uppercase tracking-wider mb-2">Dados de Contacto</h3>
-
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0"><User className="w-5 h-5 text-slate-300" /></div>
-                                        <div>
-                                            <p className="text-xs text-slate-500 font-bold uppercase mb-0.5">Ponto de Contacto</p>
-                                            <p className="text-white font-medium">{selectedRequest.contactName}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0"><Phone className="w-5 h-5 text-slate-300" /></div>
-                                        <div>
-                                            <p className="text-xs text-slate-500 font-bold uppercase mb-0.5">Telemóvel / Sede</p>
-                                            <p className="text-white font-medium">{selectedRequest.phone}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0"><Mail className="w-5 h-5 text-slate-300" /></div>
-                                        <div>
-                                            <p className="text-xs text-slate-500 font-bold uppercase mb-0.5">Email Profissional</p>
-                                            <p className="text-white font-medium">{selectedRequest.email}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Gestão CRM */}
-                            <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
-                                <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-wider mb-4">Gestão do Negócio</h3>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-400 mb-2">Estado Atual</label>
-                                        <select
-                                            value={selectedRequest.status}
-                                            onChange={(e) => setSelectedRequest({ ...selectedRequest, status: e.target.value })}
-                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 appearance-none"
-                                        >
-                                            <option value="PENDING">Pendente (Recebido)</option>
-                                            <option value="QUOTED">Cotação Enviada</option>
-                                            <option value="COMPLETED">Negócio Fechado</option>
-                                            <option value="REJECTED">Rejeitado/Cancelado</option>
-                                        </select>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label className="block text-xs font-bold text-slate-400 mb-2">Notas Internas (Admin)</label>
-                                        <textarea
-                                            value={selectedRequest.notes || ''}
-                                            onChange={(e) => setSelectedRequest({ ...selectedRequest, notes: e.target.value })}
-                                            rows={3}
-                                            placeholder="Ex: Liguei hoje e enviei proposta de desconto..."
-                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 resize-none"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        {/* Modal Footer Actions */}
-                        <div className="p-6 border-t border-white/5 bg-black/20 flex flex-wrap-reverse gap-3 justify-end items-center">
-                            <button
-                                onClick={() => { if (confirm('Apagar pedido de empresa definitivamente?')) deleteRequest.mutate(selectedRequest.id) }}
-                                disabled={deleteRequest.isPending}
-                                className="mr-auto px-4 py-3 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 flex items-center gap-2 font-semibold transition-colors disabled:opacity-50"
-                            >
-                                <Trash2 className="w-5 h-5" /> Eliminar Lead
-                            </button>
-
-                            <button onClick={() => setSelectedRequest(null)} className="px-6 py-3 rounded-xl border border-white/10 text-white hover:bg-white/5 font-semibold transition-colors">
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={() => updateRequest.mutate({ id: selectedRequest.id, status: selectedRequest.status, notes: selectedRequest.notes })}
-                                disabled={updateRequest.isPending}
-                                className="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold flex items-center gap-2 shadow-lg hover:shadow-cyan-500/25 transition-all disabled:opacity-50"
-                            >
-                                {updateRequest.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Save className="w-5 h-5" /> Guardar Alterações</>}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <CorporateRequestModal
+                    request={selectedRequest}
+                    onClose={() => setSelectedRequest(null)}
+                    onUpdate={(status: string, notes?: string) => updateRequest.mutate({ id: selectedRequest.id, status, notes })}
+                    onDelete={() => { if (confirm('Eliminar este pedido permanentemente?')) deleteRequest.mutate(selectedRequest.id); }}
+                />
             )}
         </div>
     );
 }
 
+interface ModalProps {
+    request: CorporateRequest;
+    onClose: () => void;
+    onUpdate: (status: string, notes?: string) => void;
+    onDelete: () => void;
+}
+
+function CorporateRequestModal({ request, onClose, onUpdate, onDelete }: ModalProps) {
+    const [notes, setNotes] = useState(request.notes || '');
+    const [status, setStatus] = useState(request.status);
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in transition-all">
+            <div className="absolute inset-0 bg-slate-900/40 dark:bg-black/80 backdrop-blur-md" onClick={onClose} />
+            <div className="relative w-full max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh] transition-colors">
+
+                {/* Header Decoration */}
+                <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-br from-teal-500/5 to-cyan-500/5 pointer-events-none" />
+
+                {/* Modal Header */}
+                <div className="relative flex items-center justify-between p-8 border-b border-slate-100 dark:border-white/5 shrink-0 z-10 transition-colors">
+                    <div>
+                        <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                            <Building2 className="w-7 h-7 text-teal-600 dark:text-teal-400" /> {request.companyName}
+                        </h2>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1.5 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" /> Submetido em {new Date(request.createdAt).toLocaleDateString()}
+                        </p>
+                    </div>
+                    <button onClick={onClose} className="p-3 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-2xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all border border-slate-200 dark:border-white/10 shadow-sm">
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="relative p-8 overflow-y-auto space-y-8 z-10 custom-scrollbar transition-colors">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-4">
+                            <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3">
+                                Viatura & Plano <div className="h-px flex-1 bg-slate-100 dark:bg-white/5" />
+                            </h3>
+                            {request.vehicle && (
+                                <div className="bg-slate-50 dark:bg-black/20 rounded-2xl p-4 border border-slate-200 dark:border-white/5 flex gap-4 transition-colors">
+                                    {request.vehicle.images?.[0]?.url ? (
+                                        <img src={api.defaults.baseURL?.replace('/api', '') + request.vehicle.images[0].url} className="w-20 h-20 object-cover rounded-xl shadow-lg border border-slate-200 dark:border-white/10" alt="Vehicle" />
+                                    ) : (
+                                        <div className="w-20 h-20 bg-white/10 rounded-xl flex items-center justify-center border border-white/10"><Car className="w-8 h-8 text-slate-500" /></div>
+                                    )}
+                                    <div className="min-w-0">
+                                        <p className="font-black text-slate-900 dark:text-white text-lg">{request.vehicle.brand} {request.vehicle.model}</p>
+                                        <span className="inline-block mt-1 px-2 py-0.5 bg-cyan-500/10 text-[10px] font-black uppercase rounded text-cyan-600 dark:text-cyan-400">{request.vehicle.category}</span>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-slate-50 dark:bg-black/20 rounded-2xl p-4 border border-slate-200 dark:border-white/5 transition-colors">
+                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Unidades</p>
+                                    <p className="text-xl font-black text-slate-900 dark:text-white">{request.quantity} <span className="text-xs font-medium text-slate-500">uni.</span></p>
+                                </div>
+                                <div className="bg-slate-50 dark:bg-black/20 rounded-2xl p-4 border border-slate-200 dark:border-white/5 transition-colors">
+                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Duração</p>
+                                    <p className="text-xl font-black text-slate-900 dark:text-white">{request.periodDuration} <span className="text-xs font-medium text-slate-500">{request.periodType}</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3">
+                                Contactos Diretos <div className="h-px flex-1 bg-slate-100 dark:bg-white/5" />
+                            </h3>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-4 p-3 bg-slate-50 dark:bg-black/20 rounded-xl border border-slate-200 dark:border-white/5 transition-colors">
+                                    <div className="w-10 h-10 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                        <Mail className="w-5 h-5" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">Email Corporativo</p>
+                                        <p className="font-bold text-slate-900 dark:text-white text-sm truncate">{request.email}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4 p-3 bg-slate-50 dark:bg-black/20 rounded-xl border border-slate-200 dark:border-white/5 transition-colors">
+                                    <div className="min-w-0 px-2">
+                                        <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest truncate">Responsável: {request.contactName}</p>
+                                        <p className="font-bold text-slate-900 dark:text-white text-sm">Tel: {request.phone}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-slate-50 dark:bg-black/10 rounded-3xl p-6 border border-slate-200 dark:border-white/5 space-y-6 transition-colors">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1 transition-colors">Estado da Negociação</label>
+                                <select
+                                    value={status}
+                                    onChange={(e) => setStatus(e.target.value)}
+                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 appearance-none shadow-sm transition-all"
+                                >
+                                    <option value="PENDING">Pendente (Recebido)</option>
+                                    <option value="QUOTED">Cotação Enviada</option>
+                                    <option value="COMPLETED">Negócio Fechado</option>
+                                    <option value="REJECTED">Rejeitado/Cancelado</option>
+                                </select>
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1 transition-colors">Notas Estratégicas (CRM)</label>
+                                <textarea
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    rows={4}
+                                    placeholder="Descreva aqui o histórico do contacto com esta empresa..."
+                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 resize-none shadow-sm transition-all"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="relative p-7 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-black/30 flex flex-wrap-reverse gap-4 justify-end items-center shrink-0 z-10 transition-colors">
+                    <button
+                        onClick={onDelete}
+                        className="mr-auto flex items-center gap-2 px-5 py-3.5 rounded-2xl border border-red-500/10 text-red-500 hover:bg-red-500/10 font-bold transition-all group active:scale-95"
+                    >
+                        <Trash2 className="w-5 h-5" /> Eliminar Lead
+                    </button>
+
+                    <button onClick={onClose} className="px-7 py-3.5 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-bold transition-all active:scale-95">
+                        Cancelar
+                    </button>
+                    <button
+                        onClick={() => onUpdate(status, notes)}
+                        className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:scale-105 active:scale-95 text-white font-black flex items-center gap-3 shadow-xl shadow-teal-500/20 hover:shadow-cyan-500/30 transition-all"
+                    >
+                        <Save className="w-5 h-5" /> Guardar CRM
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}

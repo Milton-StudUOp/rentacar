@@ -105,7 +105,7 @@ export default function AdminLayout() {
                             >
                                 <link.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-amber-500' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-amber-300'}`} />
                                 <span className="hidden lg:block truncate">{link.label}</span>
-                                {link.badge && link.badge > 0 && (
+                                {link.badge !== undefined && link.badge > 0 && (
                                     <span className="hidden lg:flex ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold items-center justify-center shadow-md animate-pulse">
                                         {link.badge}
                                     </span>
@@ -292,7 +292,7 @@ export default function AdminLayout() {
                             >
                                 <div className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${isActive ? 'bg-amber-100 dark:bg-amber-500/20 shadow-sm shadow-amber-500/10 -translate-y-1' : 'bg-transparent'}`}>
                                     <link.icon className={`w-5 h-5 ${isActive ? 'scale-110 drop-shadow-md' : 'scale-100'} transition-transform`} />
-                                    {link.badge && link.badge > 0 && (
+                                    {link.badge !== undefined && link.badge > 0 && (
                                         <span className={`absolute top-0 right-0 w-3 h-3 rounded-full bg-red-500 border-2 ${isActive ? 'border-amber-100 dark:border-[#1d1f2b]' : 'border-white dark:border-[#0a0d18]'} transition-colors`} />
                                     )}
                                 </div>

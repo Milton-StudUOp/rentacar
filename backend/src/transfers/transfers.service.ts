@@ -8,6 +8,7 @@ export class TransfersService {
     async findAllServices(activeOnly = true) {
         return this.prisma.transferService.findMany({
             where: activeOnly ? { isActive: true } : {},
+            include: { images: true },
             orderBy: { name: 'asc' },
         });
     }
@@ -15,6 +16,7 @@ export class TransfersService {
     async findServiceById(id: number) {
         const service = await this.prisma.transferService.findUnique({
             where: { id },
+            include: { images: true },
         });
         if (!service) throw new NotFoundException('Serviço de transfer não encontrado');
         return service;
@@ -25,7 +27,6 @@ export class TransfersService {
         description?: string;
         vehicleType: string;
         capacity: number;
-        imageUrl?: string;
     }) {
         return this.prisma.transferService.create({ data });
     }
@@ -41,12 +42,40 @@ export class TransfersService {
         return { message: 'Serviço removido com sucesso' };
     }
 
+    async addImage(id: number, data: { url: string, isPrimary?: boolean }) {
+        return this.prisma.transferServiceImage.create({
+            data: {
+                url: data.url,
+                isPrimary: data.isPrimary || false,
+                serviceId: id,
+            }
+        });
+    }
+
+    async deleteImage(imageId: number) {
+        return this.prisma.transferServiceImage.delete({
+            where: { id: imageId }
+        });
+    }
+
+    async setPrimaryImage(id: number, imageId: number) {
+        await this.prisma.transferServiceImage.updateMany({
+            where: { serviceId: id },
+            data: { isPrimary: false }
+        });
+        return this.prisma.transferServiceImage.update({
+            where: { id: imageId },
+            data: { isPrimary: true }
+        });
+    }
+
     async searchServices(passengers: number) {
         return this.prisma.transferService.findMany({
             where: {
                 isActive: true,
                 capacity: { gte: passengers },
             },
+            include: { images: true },
             orderBy: { capacity: 'asc' },
         });
     }

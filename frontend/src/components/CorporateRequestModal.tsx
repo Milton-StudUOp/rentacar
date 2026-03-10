@@ -32,8 +32,9 @@ export default function CorporateRequestModal({ isOpen, onClose, vehicleId, vehi
             await api.post('/corporate-requests', { ...formData, vehicleId });
             setIsSuccess(true);
             toast.success('Pedido Submetido com Sucesso!', { duration: 5000 });
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Erro ao submeter pedido.');
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || 'Erro ao submeter pedido.');
         } finally {
             setIsSubmitting(false);
         }

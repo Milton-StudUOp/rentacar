@@ -1,5 +1,5 @@
 import {
-    Controller, Get, Post, Put, Delete, Param, Query, Body, UseGuards, ParseIntPipe,
+    Controller, Get, Post, Put, Delete, Patch, Param, Query, Body, UseGuards, ParseIntPipe,
 } from '@nestjs/common';
 import { TransfersService } from './transfers.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -42,6 +42,24 @@ export class TransfersController {
     @UseGuards(JwtAuthGuard, AdminGuard)
     deleteService(@Param('id', ParseIntPipe) id: number) {
         return this.transfersService.deleteService(id);
+    }
+
+    @Post('services/:id/images')
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    addImage(@Param('id', ParseIntPipe) id: number, @Body() body: { url: string, isPrimary?: boolean }) {
+        return this.transfersService.addImage(id, body);
+    }
+
+    @Delete('images/:id')
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    deleteImage(@Param('id', ParseIntPipe) id: number) {
+        return this.transfersService.deleteImage(id);
+    }
+
+    @Patch('services/:id/images/:imageId/primary')
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    setPrimaryImage(@Param('id', ParseIntPipe) id: number, @Param('imageId', ParseIntPipe) imageId: number) {
+        return this.transfersService.setPrimaryImage(id, imageId);
     }
 
 }

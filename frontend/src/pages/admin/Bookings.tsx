@@ -223,8 +223,8 @@ export default function AdminBookings() {
                         <button
                             onClick={() => setIsStatusMenuOpen(!isStatusMenuOpen)}
                             className={`w-full md:w-auto flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${selectedStatuses.length > 0
-                                ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.2)]'
-                                : 'bg-black/20 text-slate-300 border-white/10 hover:bg-black/40'
+                                ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.2)]'
+                                : 'bg-slate-100 dark:bg-black/20 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-black/40'
                                 }`}
                         >
                             <div className="flex items-center gap-2">
@@ -235,7 +235,7 @@ export default function AdminBookings() {
                         </button>
 
                         {isStatusMenuOpen && (
-                            <div className="absolute top-full left-0 mt-2 w-56 bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-300 rounded-2xl border border-white/10 shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                            <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-300 rounded-2xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
                                 {[
                                     { key: 'PENDING', label: '⏳ Pendentes' },
                                     { key: 'CONFIRMED', label: '💳 Aguard. Pgto' },
@@ -270,9 +270,9 @@ export default function AdminBookings() {
                     <select
                         value={filterType}
                         onChange={e => updateUrlParams({ type: e.target.value })}
-                        className="bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-sm md:text-md text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all flex-1 md:flex-none cursor-pointer appearance-none"
+                        className="bg-slate-100 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm md:text-md text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/10 focus:border-cyan-500/50 transition-all flex-1 md:flex-none cursor-pointer appearance-none shadow-sm"
                         id="filter-type"
-                        style={{ paddingRight: '2rem', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
+                        style={{ paddingRight: '2rem', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
                     >
                         <option value="" className="bg-slate-900 text-slate-600 dark:text-slate-300">Todos Veículos</option>
                         <option value="VEHICLE" className="bg-slate-900 text-slate-600 dark:text-slate-300">Viaturas</option>
@@ -289,8 +289,8 @@ export default function AdminBookings() {
                         <select
                             value={sortBy}
                             onChange={(e) => updateUrlParams({ sortBy: e.target.value })}
-                            className="bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 border border-white/10 rounded-xl pl-10 pr-8 py-2.5 text-sm text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all cursor-pointer appearance-none w-full"
-                            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: 'right 0.25rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em' }}
+                            className="bg-slate-100 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl pl-10 pr-8 py-2.5 text-sm text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/10 focus:border-cyan-500/50 transition-all cursor-pointer appearance-none w-full shadow-sm"
+                            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: 'right 0.25rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em' }}
                         >
                             <option value="newest" className="bg-slate-900 text-slate-600 dark:text-slate-300">Mais Recentes</option>
                             <option value="oldest" className="bg-slate-900 text-slate-600 dark:text-slate-300">Mais Antigas</option>

@@ -124,13 +124,24 @@ model TransferService {
   description String?           @db.Text
   vehicleType String            @db.VarChar(100)
   capacity    Int
-  imageUrl    String?           @db.VarChar(400)
   isActive    Boolean           @default(true)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+  images      TransferServiceImage[]
   bookings    TransferBooking[]
 
   @@map("transfer_services")
+}
+
+model TransferServiceImage {
+  id        Int             @id @default(autoincrement())
+  serviceId Int
+  url       String          @db.VarChar(400)
+  isPrimary Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  service   TransferService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("transfer_service_images")
 }
 
 model Booking {

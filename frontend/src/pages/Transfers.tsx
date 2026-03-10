@@ -8,6 +8,13 @@ import { useState } from 'react';
 import Flatpickr from 'react-flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt';
 import 'flatpickr/dist/flatpickr.css';
+import ImageCarousel from '../components/ImageCarousel';
+
+interface TransferImage {
+    id: number;
+    url: string;
+    isPrimary: boolean;
+}
 
 interface TransferService {
     id: number;
@@ -15,7 +22,7 @@ interface TransferService {
     description: string | null;
     vehicleType: string;
     capacity: number;
-    imageUrl: string | null;
+    images: TransferImage[];
 }
 
 export default function Transfers() {
@@ -269,12 +276,16 @@ export default function Transfers() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {searchResults.map((s: TransferService) => (
                                     <div key={s.id} className="bg-white/20 dark:bg-[#0a0d18]/40 border border-white/40 dark:border-white/10 backdrop-blur-xl rounded-2xl overflow-hidden group hover:border-white/60 dark:hover:border-white/30 transition-all relative flex flex-col shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
-                                        {s.imageUrl && (
-                                            <div className="h-48 relative overflow-hidden bg-white/30 dark:bg-black/20 transition-colors">
-                                                <img src={api.defaults.baseURL?.replace('/api', '') + s.imageUrl} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent dark:from-[#0f172a] dark:to-transparent" />
-                                            </div>
-                                        )}
+                                        <div className="h-48 relative overflow-hidden bg-white/30 dark:bg-black/20 transition-colors">
+                                            {s.images && s.images.length > 0 ? (
+                                                <ImageCarousel images={s.images} autoPlay={true} />
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center h-full text-slate-500 dark:text-slate-400 opacity-60">
+                                                    <Car className="w-12 h-12 mb-2" />
+                                                    <span className="text-xs font-bold uppercase tracking-wider">Sem Imagem</span>
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className="flex-1 p-6 relative z-10 flex flex-col">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
@@ -310,11 +321,8 @@ export default function Transfers() {
                             {services.map((s: TransferService) => (
                                 <div key={s.id} className="bg-white/20 dark:bg-[#0a0d18]/40 border border-white/40 dark:border-white/10 backdrop-blur-xl rounded-2xl overflow-hidden group hover:border-white/60 dark:hover:border-white/30 transition-all relative flex flex-col shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
                                     <div className="h-48 relative overflow-hidden bg-white/30 dark:bg-black/20 transition-colors flex items-center justify-center">
-                                        {s.imageUrl ? (
-                                            <>
-                                                <img src={api.defaults.baseURL?.replace('/api', '') + s.imageUrl} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent dark:from-[#0f172a] dark:to-transparent" />
-                                            </>
+                                        {s.images && s.images.length > 0 ? (
+                                            <ImageCarousel images={s.images} autoPlay={true} />
                                         ) : (
                                             <div className="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 opacity-60">
                                                 <Car className="w-12 h-12 mb-2" />

@@ -1,7 +1,9 @@
 import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { Role } from '@prisma/client';
 
 @Injectable()
@@ -9,6 +11,7 @@ export class AuthService {
     constructor(
         private prisma: PrismaService,
         private jwtService: JwtService,
+        private emailService: EmailService,
     ) { }
 
     async register(data: { name: string; phone: string; email?: string; password: string }) {
@@ -99,6 +102,60 @@ export class AuthService {
         });
 
         return { message: 'Senha alterada com sucesso' };
+    }
+
+    async requestPasswordReset(email: string) {
+        const user = await this.prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            // Fails silently for security, but tells the user to check email if registered
+            return { message: 'Se o email estiver registado, receberá um código em breve.' };
+        }
+
+        const resetCode = crypto.randomInt(100000, 999999).toString();
+        const expires = new Date();
+        expires.setMinutes(expires.getMinutes() + 15);
+
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                resetCode,
+                resetCodeExpires: expires,
+            },
+        });
+
+        await this.emailService.sendPasswordResetCode(email, resetCode);
+
+        return { message: 'Código enviado para o seu email.' };
+    }
+
+    async verifyResetCode(email: string, code: string) {
+        const user = await this.prisma.user.findUnique({ where: { email } });
+        if (!user || user.resetCode !== code || !user.resetCodeExpires || user.resetCodeExpires < new Date()) {
+            throw new BadRequestException('Código inválido ou expirado');
+        }
+
+        return { message: 'Código verificado com sucesso' };
+    }
+
+    async resetPassword(data: { email: string; code: string; newPassword: string }) {
+        const user = await this.prisma.user.findUnique({ where: { email: data.email } });
+        if (!user || user.resetCode !== data.code || !user.resetCodeExpires || user.resetCodeExpires < new Date()) {
+            throw new BadRequestException('Código inválido ou expirado');
+        }
+
+        if (data.newPassword.length < 6) throw new BadRequestException('A nova senha deve ter pelo menos 6 caracteres');
+
+        const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetCode: null,
+                resetCodeExpires: null,
+            },
+        });
+
+        return { message: 'Senha redefinida com sucesso' };
     }
 
     private generateTokens(user: any) {

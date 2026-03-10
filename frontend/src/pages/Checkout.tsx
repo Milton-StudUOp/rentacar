@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import api from '../lib/api';
@@ -180,6 +180,14 @@ export default function Checkout() {
                                                 required
                                                 id="login-password"
                                             />
+                                            <div className="flex justify-end mt-1">
+                                                <Link
+                                                    to="/forgot-password"
+                                                    className="text-xs font-medium text-teal-600 dark:text-teal-400 hover:underline underline-offset-2 transition-colors"
+                                                >
+                                                    Esqueceu a senha?
+                                                </Link>
+                                            </div>
                                         </div>
                                         <button
                                             type="submit"

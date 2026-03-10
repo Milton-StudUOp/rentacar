@@ -9,6 +9,7 @@ import Transfers from './pages/Transfers';
 import Checkout from './pages/Checkout';
 import MyBookings from './pages/MyBookings';
 import Profile from './pages/Profile';
+import PasswordReset from './pages/PasswordReset';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminVehicles from './pages/admin/Vehicles';
 import AdminTransfers from './pages/admin/Transfers';
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/checkout/:type/:id" element={<Checkout />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/forgot-password" element={<PasswordReset />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />

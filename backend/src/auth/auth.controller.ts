@@ -37,4 +37,19 @@ export class AuthController {
     ) {
         return this.authService.changePassword(req.user.sub, body.currentPassword, body.newPassword);
     }
+
+    @Post('forgot-password')
+    async forgotPassword(@Body() body: { email: string }) {
+        return this.authService.requestPasswordReset(body.email);
+    }
+
+    @Post('verify-code')
+    async verifyCode(@Body() body: { email: string; code: string }) {
+        return this.authService.verifyResetCode(body.email, body.code);
+    }
+
+    @Post('reset-password')
+    async resetPassword(@Body() body: { email: string; code: string; newPassword: string }) {
+        return this.authService.resetPassword(body);
+    }
 }

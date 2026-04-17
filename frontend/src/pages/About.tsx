@@ -1,4 +1,4 @@
-import { Briefcase, Building2, Eye, Target, MapPin, CheckCircle2, ShieldCheck, Gem } from 'lucide-react';
+import { Building2, Eye, Target, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function About() {

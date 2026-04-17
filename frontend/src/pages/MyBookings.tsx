@@ -325,7 +325,7 @@ export default function MyBookings() {
                                             <div className="grid sm:grid-cols-2 gap-4">
                                                 <div className="space-y-1.5 text-sm font-mono text-slate-500 dark:text-slate-400 transition-colors">
                                                     <p>Banco: <span className="text-slate-900 dark:text-slate-200 transition-colors">Millennium BIM</span></p>
-                                                    <p>Titular: <span className="text-slate-900 dark:text-slate-200 transition-colors">Rent-a-Car MZ Lda</span></p>
+                                                    <p>Titular: <span className="text-slate-900 dark:text-slate-200 transition-colors">NovaDrive MZ Lda</span></p>
                                                     <p>NIB: <span className="text-slate-900 dark:text-slate-200 transition-colors">0001 0000 0000 0000 000 00</span></p>
                                                 </div>
                                                 <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-xl text-center border border-slate-200 dark:border-slate-800 transition-colors">

@@ -10,6 +10,7 @@ import Checkout from './pages/Checkout';
 import MyBookings from './pages/MyBookings';
 import Profile from './pages/Profile';
 import PasswordReset from './pages/PasswordReset';
+import About from './pages/About';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminVehicles from './pages/admin/Vehicles';
 import AdminTransfers from './pages/admin/Transfers';
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/vehicles/:id" element={<VehicleDetail />} />
           <Route path="/transfers" element={<Transfers />} />
+          <Route path="/about" element={<About />} />
           <Route path="/checkout/:type/:id" element={<Checkout />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/profile" element={<Profile />} />

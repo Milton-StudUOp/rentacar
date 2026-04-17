@@ -13,16 +13,16 @@ export default function Footer() {
                                 <Car className="w-5 h-5 text-white" />
                             </div>
                             <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent transition-all">
-                                RentaCar
+                                NovaDrive
                             </span>
                         </Link>
                         <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed max-w-md transition-colors">
-                            A melhor plataforma de aluguer de viaturas e transfers em Moçambique.
-                            Explore o país com conforto e segurança.
+                            Soluções integradas de mobilidade empresarial em Moçambique.
+                            Aluguer de viaturas e gestão profissional de frotas.
                         </p>
                         <div className="flex flex-col gap-2 mt-4 text-sm text-slate-600 dark:text-slate-400 transition-colors">
                             <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> +258 84 000 0000</span>
-                            <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> info@rentacar.co.mz</span>
+                            <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> info@novadrive.co.mz</span>
                             <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Maputo, Moçambique</span>
                         </div>
                     </div>
@@ -34,6 +34,7 @@ export default function Footer() {
                             <Link to="/" className="text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 text-sm transition-colors">Início</Link>
                             <Link to="/vehicles" className="text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 text-sm transition-colors">Viaturas</Link>
                             <Link to="/transfers" className="text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 text-sm transition-colors">Transfers</Link>
+                            <Link to="/about" className="text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 text-sm transition-colors">Sobre Nós</Link>
                         </div>
                     </div>
 
@@ -48,7 +49,7 @@ export default function Footer() {
 
                 <div className="border-t border-slate-200 dark:border-white/5 mt-8 pt-8 text-center transition-colors">
                     <p className="text-slate-500 dark:text-slate-500 text-sm">
-                        © {new Date().getFullYear()} RentaCar Moçambique. Todos os direitos reservados.
+                        © {new Date().getFullYear()} NovaDrive Moçambique. Todos os direitos reservados.
                     </p>
                 </div>
             </div>

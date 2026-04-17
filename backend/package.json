@@ -1,7 +1,7 @@
 {
-  "name": "rent-a-car-backend",
+  "name": "novadrive-backend",
   "version": "1.0.0",
-  "description": "Rent-a-Car & Transfers API",
+  "description": "NovaDrive — Mobilidade Empresarial API",
   "main": "dist/main.js",
   "scripts": {
     "build": "nest build",

@@ -14,6 +14,7 @@ export default function Navbar() {
         { to: '/', label: 'Início' },
         { to: '/vehicles', label: 'Viaturas' },
         { to: '/transfers', label: 'Transfers' },
+        { to: '/about', label: 'Sobre Nós' },
     ];
 
     const toggleTheme = () => {
@@ -30,7 +31,7 @@ export default function Navbar() {
                             <Car className="w-5 h-5 text-white" />
                         </div>
                         <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent hidden sm:block transition-all">
-                            RentaCar
+                            NovaDrive
                         </span>
                     </Link>
 

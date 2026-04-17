@@ -1,6 +1,6 @@
-# Rent-a-Car & Transfers Platform (Moçambique)
+# NovaDrive — Mobilidade que move negócios
 
-Uma plataforma completa ("premium") para aluguer de viaturas de luxo e reservas de transfers (aeroportos/rotas), desenhada especificamente para o mercado moçambicano.
+Uma plataforma completa de mobilidade empresarial para o mercado moçambicano, oferecendo serviços integrados de aluguer de viaturas, gestão profissional de frotas e reservas de transfers.
 
 ## Arquitetura do Sistema
 
@@ -20,7 +20,7 @@ O projeto é construído numa arquitetura full-stack moderna:
 - **Motor de Reservas Integrado**:
   - Registo rápido _on-the-fly_ via submissão de um único formulário no "Checkout".
   - Processo de Checkout fluido agrupando aluguer e cliente no mesmo cesto.
-- **Lifecycle Extensível de Reservas (Fase 10)**: O cliente sabe sempre o estado da reserva (`PENDENTE`, `AGUARDANDO PAGAMENTO`, `PAGA`, `EM USO`, `CONCLUÍDA`). Inclui dados de pagamento com referências bancárias auto-geradas.
+- **Lifecycle Extensível de Reservas**: O cliente sabe sempre o estado da reserva (`PENDENTE`, `AGUARDANDO PAGAMENTO`, `PAGA`, `EM USO`, `CONCLUÍDA`). Inclui dados de pagamento com referências bancárias auto-geradas.
 - **As Minhas Reservas**: Área do utilizador para consultar o histórico, aceder aos dados de pagamento e visualizar os recibos informativos.
 
 ### Painel de Administração
@@ -32,7 +32,7 @@ O projeto é construído numa arquitetura full-stack moderna:
   - Aceitar paralelismo (múltiplas reservas `PENDENTES` na mesma data não bloqueiam calendário).
   - Bloqueio estrito de datas aquando da passagem para `CONFIRMADA`.
   - Botões de ação sequenciais: `Confirmar Pagamento` ➝ `Entregar Viatura` ➝ `Confirmar Devolução`.
-- **Sistema de Notificações em Tempo Real (Fase 11)**: Ícone no cabeçalho (_bell_) que acende e faz _polling_ imediato de novas reservas a chegar à caixa do Administrador, mantendo-o sempre informado.
+- **Sistema de Notificações em Tempo Real**: Ícone no cabeçalho (_bell_) que acende e faz _polling_ imediato de novas reservas a chegar à caixa do Administrador.
 
 ## Como Iniciar o Projeto Localmente
 
@@ -57,7 +57,7 @@ O código já incluiu o ficheiro `.env.example`. Na pasta `backend/`, garanta qu
 
 ```env
 DATABASE_URL="mysql://root:root@localhost:33006/rentacar"
-JWT_SECRET="secret_super_seguro_rentacar_2026"
+JWT_SECRET="secret_super_seguro_novadrive_2026"
 ```
 
 **3. Preparar a Base de Dados (Terminal 1)**
@@ -90,8 +90,22 @@ npm run dev
 
 Acessar por `http://localhost:5173`.
 
-- **Admin App**: Faça o login usando a conta semeada (`admin@rentacar.co.mz` / `admin123`).
+- **Admin App**: Faça o login usando a conta semeada (`admin@novadrive.co.mz` / `admin123`).
 - **Client App**: Pode navegar publicamente como visitante ou registar em _checkout_ (ou usar o cliente semeado: `joao@email.com` / `cliente123`).
+
+## Sobre a NovaDrive
+
+A NovaDrive é uma empresa moçambicana especializada em soluções de mobilidade empresarial, oferecendo serviços integrados de aluguer de viaturas e gestão profissional de frotas. Mais do que fornecer veículos, a NovaDrive posiciona-se como parceiro estratégico de mobilidade para empresas e organizações.
+
+### Serviços Principais
+
+- **Aluguer de Viaturas**: Diário, mensal e contratos corporativos de longo prazo
+- **Gestão de Frotas**: Manutenção, seguros, monitorização e relatórios de desempenho
+- **Assistência e Suporte**: Assistência técnica, manutenção preventiva e substituição de viaturas
+
+### Público-Alvo
+
+Empresas privadas, organizações internacionais, ONG's, empresas de construção e mineração, empresas de logística, instituições públicas e profissionais/executivos.
 
 ## Considerações
 
@@ -100,4 +114,4 @@ Este _software_ foi desenhado para escalabilidade robusta, resiliência na norma
 - O frontend compila usando o Vite SWC, e as classes CSS aproveitam de forma eficiente a _Utility First rule_ do Tailwind.
 - A Base de dados Prisma suporta _Cascading_ (Remoção Limpa) em tabelas relacionais de Viaturas para Reservas.
 
-**Desenvolvido na Sessão de Programação AI - Março 2026**
+**NovaDrive — Nós cuidamos das viaturas, você cuida do negócio.**

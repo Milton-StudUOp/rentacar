@@ -81,7 +81,7 @@ export default function AdminLayout() {
                         </div>
                         <div className="hidden lg:block overflow-hidden whitespace-nowrap">
                             <span className="text-lg font-bold text-slate-900 dark:text-white block transition-colors">Admin</span>
-                            <p className="text-[10px] text-slate-500 dark:text-slate-400 -mt-1 transition-colors">RentaCar Moçambique</p>
+                            <p className="text-[10px] text-slate-500 dark:text-slate-400 -mt-1 transition-colors">NovaDrive Moçambique</p>
                         </div>
                     </Link>
                 </div>

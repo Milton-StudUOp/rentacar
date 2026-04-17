@@ -20,7 +20,7 @@ export class EmailService {
 
     async sendPasswordResetCode(email: string, code: string) {
         const mailOptions = {
-            from: `"Rent-a-Car & Transfers" <${this.configService.get<string>('SMTP_USER')}>`,
+            from: `"NovaDrive" <${this.configService.get<string>('SMTP_USER')}>`,
             to: email,
             subject: 'Código de Recuperação de Senha',
             html: `
@@ -34,7 +34,7 @@ export class EmailService {
                     <p>Este código é válido por 15 minutos. Se não solicitou esta alteração, por favor ignore este email.</p>
                     <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
                     <p style="font-size: 12px; color: #64748b; text-align: center;">
-                        © ${new Date().getFullYear()} Rent-a-Car & Transfers. Todos os direitos reservados.
+                        © ${new Date().getFullYear()} NovaDrive. Todos os direitos reservados.
                     </p>
                 </div>
             `,

@@ -1,6 +1,7 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Eye, Target, Gem, Quote, ArrowUpRight } from 'lucide-react';
 import React from 'react';
+import { getPublicUrl } from '../../utils/assetUrl';
 
 /* ── Section label ────────────────────────────────────── */
 function Label({ icon: Icon, text }: { icon: React.ElementType; text: string }) {
@@ -88,7 +89,7 @@ export default function AboutSection() {
                         <div className="absolute -inset-4 bg-gradient-to-br from-brand-500/20 via-transparent to-transparent rounded-3xl blur-2xl" />
                         <div className="relative rounded-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.2)] border border-white/10">
                             <img
-                                src="/about-driver.png"
+                                src={getPublicUrl('/about-driver.png')}
                                 alt="Motorista NovaDrive"
                                 className="w-full h-[520px] object-cover"
                             />

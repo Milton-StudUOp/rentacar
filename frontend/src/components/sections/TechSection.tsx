@@ -42,12 +42,16 @@ function TechCard({ icon: Icon, title, desc, accent }: { icon: React.ElementType
 
 // Make it importable in JSX
 import React from 'react';
+import { getPublicUrl } from '../../utils/assetUrl';
 
 export default function TechSection() {
     return (
         <section className="relative py-32 overflow-hidden">
             {/* Background image */}
-            <div className="absolute inset-0 bg-[url('/tech-gps.png')] bg-cover bg-center opacity-[0.15] mix-blend-luminosity" />
+            <div 
+                style={{ backgroundImage: `url(${getPublicUrl('/tech-gps.png')})` }}
+                className="absolute inset-0 bg-cover bg-center opacity-[0.15] mix-blend-luminosity" 
+            />
 
             {/* Deep dark gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#060608]/90 via-[#0d060a]/80 to-[#060608]/90" />

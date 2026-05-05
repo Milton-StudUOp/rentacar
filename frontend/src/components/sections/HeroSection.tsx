@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring, animate } f
 import { Bus, ArrowRight, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { getPublicUrl } from '../../utils/assetUrl';
 
 /* ── Animated counter ─────────────────────────────────── */
 function Counter({ target, suffix = '', prefix = '' }: { target: number; suffix?: string; prefix?: string }) {
@@ -96,7 +97,12 @@ function MagneticButton({ children, href, className = "" }: { children: React.Re
 }
 
 /* ── Vehicle Carousel (CSS transitions, like original) ── */
-const heroVehicles = ['/CarOne.webp', '/CarTwo.webp', '/CarThree.webp', '/CarFour.webp'];
+const heroVehicles = [
+    getPublicUrl('/CarOne.webp'),
+    getPublicUrl('/CarTwo.webp'),
+    getPublicUrl('/CarThree.webp'),
+    getPublicUrl('/CarFour.webp')
+];
 
 function VehicleCarousel() {
     const [currentIdx, setCurrentIdx] = useState(0);
@@ -172,8 +178,8 @@ export default function HeroSection() {
             {/* — Background layers — */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0c] via-[#0f0a0e] to-[#0a0a0c]" />
             <motion.div
-                style={{ y: yBg, scale: scaleBg }}
-                className="absolute inset-0 bg-[url('/hero-fleet.png')] bg-cover bg-center opacity-25 mix-blend-luminosity transform-gpu will-change-transform"
+                style={{ y: yBg, scale: scaleBg, backgroundImage: `url(${getPublicUrl('/hero-fleet.png')})` }}
+                className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity transform-gpu will-change-transform"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/50 to-transparent" />
 

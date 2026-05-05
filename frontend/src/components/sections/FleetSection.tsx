@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bus, Users, X, ChevronRight, CheckCircle2, Gauge, Zap } from 'lucide-react';
 import { useState } from 'react';
+import { getPublicUrl } from '../../utils/assetUrl';
 
 const fleet = [
     {
@@ -8,7 +9,7 @@ const fleet = [
         category: 'Van Premium',
         capacity: '8–12',
         ideal: 'Executivos · Rotas urbanas',
-        img: '/vehicle-hiace.png',
+        img: getPublicUrl('/vehicle-hiace.png'),
         badge: 'Popular',
         badgeColor: 'bg-brand-500',
         specs: { Motor: 'Diesel 2.8L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Semestral' },
@@ -18,7 +19,7 @@ const fleet = [
         category: 'Van Premium',
         capacity: '8–12',
         ideal: 'Executivos · Aeroporto',
-        img: '/vehicle-transporter.png',
+        img: getPublicUrl('/vehicle-transporter.png'),
         badge: 'Destaque',
         badgeColor: 'bg-amber-500',
         specs: { Motor: 'Diesel 2.0L TDI', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Semestral' },
@@ -28,7 +29,7 @@ const fleet = [
         category: 'Van Operacional',
         capacity: '8–12',
         ideal: 'Operações · Indústria',
-        img: '/vehicle-nv350.png',
+        img: getPublicUrl('/vehicle-nv350.png'),
         badge: null,
         badgeColor: '',
         specs: { Motor: 'Diesel 2.5L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Semestral' },
@@ -38,7 +39,7 @@ const fleet = [
         category: 'Minibus Médio',
         capacity: '14–18',
         ideal: 'Grandes equipas · Mineração',
-        img: '/vehicle-coaster.png',
+        img: getPublicUrl('/vehicle-coaster.png'),
         badge: 'Elite',
         badgeColor: 'bg-purple-600',
         specs: { Motor: 'Diesel 4.2L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Trimestral' },
@@ -48,7 +49,7 @@ const fleet = [
         category: 'Minibus Médio',
         capacity: '14–18',
         ideal: 'Grandes equipas · Mineração',
-        img: '/vehicle-rosa.png',
+        img: getPublicUrl('/vehicle-rosa.png'),
         badge: null,
         badgeColor: '',
         specs: { Motor: 'Diesel 4.9L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Trimestral' },
@@ -58,7 +59,7 @@ const fleet = [
         category: 'Minibus Capacidade',
         capacity: '14–18',
         ideal: 'Logística · Grandes rotas',
-        img: '/vehicle-iveco.png',
+        img: getPublicUrl('/vehicle-iveco.png'),
         badge: null,
         badgeColor: '',
         specs: { Motor: 'Diesel 3.0L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Trimestral' },

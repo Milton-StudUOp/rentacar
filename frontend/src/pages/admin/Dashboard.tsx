@@ -4,9 +4,8 @@ import { formatPrice } from '../../lib/utils';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import {
-    DollarSign, Car, Users, CalendarCheck, ArrowLeftRight, TrendingUp,
     Clock, AlertCircle, CheckCircle, XCircle, ArrowUpRight, ArrowRight,
-    Banknote, BarChart3, PieChart, CalendarDays
+    Banknote, PieChart, CalendarDays, CalendarCheck, Car, Users, TrendingUp
 } from 'lucide-react';
 import Flatpickr from 'react-flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt';
@@ -250,7 +249,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-colors">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 transition-colors">
                 {/* Booking Status Breakdown */}
                 <div className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl p-6 transition-colors">
                     <div className="flex items-center gap-2 mb-6 transition-colors">
@@ -262,7 +261,7 @@ export default function AdminDashboard() {
                         {[
                             { label: 'Pendentes', value: pendingCount, icon: Clock, color: 'amber', pct: totalBookings ? Math.round((pendingCount / totalBookings) * 100) : 0 },
                             { label: 'Por Pagar (Conf)', value: confirmedCount, icon: Clock, color: 'blue', pct: totalBookings ? Math.round((confirmedCount / totalBookings) * 100) : 0 },
-                            { label: 'Pagas', value: paidCount, icon: DollarSign, color: 'emerald', pct: totalBookings ? Math.round((paidCount / totalBookings) * 100) : 0 },
+                            { label: 'Pagas', value: paidCount, icon: Banknote, color: 'emerald', pct: totalBookings ? Math.round((paidCount / totalBookings) * 100) : 0 },
                             { label: 'Aguard. Entrega', value: awaitingDeliveryCount, icon: Car, color: 'orange', pct: totalBookings ? Math.round((awaitingDeliveryCount / totalBookings) * 100) : 0 },
                             { label: 'Em Uso', value: deliveredCount, icon: Car, color: 'purple', pct: totalBookings ? Math.round((deliveredCount / totalBookings) * 100) : 0 },
                             { label: 'Concluídas', value: kpis?.completedBookings || 0, icon: CheckCircle, color: 'cyan', pct: totalBookings ? Math.round(((kpis?.completedBookings || 0) / totalBookings) * 100) : 0 },
@@ -302,37 +301,6 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Booking by Type */}
-                <div className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl p-6 transition-colors">
-                    <div className="flex items-center gap-2 mb-6 transition-colors">
-                        <BarChart3 className="w-5 h-5 text-teal-600 dark:text-teal-400 transition-colors" />
-                        <h3 className="font-semibold text-slate-900 dark:text-white transition-colors">Reservas por Tipo</h3>
-                    </div>
-
-                    <div className="flex items-end gap-6 justify-center h-40 mb-4 transition-colors">
-                        {[
-                            { label: 'Viaturas', value: kpis?.bookingsByType?.vehicle || 0, icon: Car, color: 'from-teal-400 to-cyan-500' },
-                            { label: 'Transfers', value: kpis?.bookingsByType?.transfer || 0, icon: ArrowLeftRight, color: 'from-violet-400 to-purple-500' },
-                        ].map((item, i) => {
-                            const max = Math.max(kpis?.bookingsByType?.vehicle || 1, kpis?.bookingsByType?.transfer || 1);
-                            const height = max > 0 ? Math.max((item.value / max) * 100, 10) : 10;
-                            return (
-                                <div key={i} className="flex flex-col items-center gap-2 transition-colors">
-                                    <span className="text-2xl font-bold text-slate-900 dark:text-white transition-colors">{item.value}</span>
-                                    <div
-                                        className={`w-12 sm:w-16 rounded-t-xl bg-gradient-to-t ${item.color} transition-all duration-500 shadow-sm`}
-                                        style={{ height: `${height}%` }}
-                                    />
-                                    <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 transition-colors">
-                                        <item.icon className="w-3 h-3" />
-                                        {item.label}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
                 {/* Quick Stats */}
                 <div className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl p-6 transition-colors">
                     <div className="flex items-center gap-2 mb-6">
@@ -343,7 +311,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center transition-colors">
-                                    <DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400 transition-colors" />
+                                    <Banknote className="w-4 h-4 text-emerald-600 dark:text-emerald-400 transition-colors" />
                                 </div>
                                 <span className="text-sm text-slate-600 dark:text-slate-300 transition-colors">Ticket médio</span>
                             </div>
@@ -397,7 +365,6 @@ export default function AdminDashboard() {
                             <tr className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider transition-colors">
                                 <th className="text-left py-3 px-6">ID</th>
                                 <th className="text-left py-3 px-4">Cliente</th>
-                                <th className="text-left py-3 px-4">Tipo</th>
                                 <th className="text-left py-3 px-4">Detalhe</th>
                                 <th className="text-right py-3 px-4">Valor</th>
                                 <th className="text-center py-3 px-6">Status</th>
@@ -411,7 +378,6 @@ export default function AdminDashboard() {
                                 status: string;
                                 type: string;
                                 vehicleBooking?: { vehicle: { brand: string; model: string; images?: { url: string }[] } };
-                                transferBooking?: { route: { origin: string; destination: string } };
                             }) => (
                                 <tr key={b.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
                                     <td className="py-4 px-6 relative">
@@ -429,22 +395,8 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="py-4 px-4">
-                                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium ${b.type === 'VEHICLE' ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-100 dark:border-teal-500/20' : 'bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400 border border-violet-100 dark:border-violet-500/20'
-                                            } transition-colors`}>
-                                            {b.type === 'VEHICLE' ? (
-                                                b.vehicleBooking?.vehicle?.images?.[0]?.url ? (
-                                                    <img src={b.vehicleBooking.vehicle.images[0].url} alt="" className="w-5 h-5 rounded object-cover" />
-                                                ) : <Car className="w-3 h-3" />
-                                            ) : <ArrowLeftRight className="w-3 h-3" />}
-                                            {b.type === 'VEHICLE' ? 'Viatura' : 'Transfer'}
-                                        </span>
-                                    </td>
                                     <td className="py-4 px-4 text-slate-700 dark:text-slate-300 font-medium transition-colors max-w-[150px] truncate">
-                                        {b.vehicleBooking
-                                            ? `${b.vehicleBooking.vehicle?.brand} ${b.vehicleBooking.vehicle?.model}`
-                                            : `${b.transferBooking?.route?.origin} → ${b.transferBooking?.route?.destination}`
-                                        }
+                                        {b.vehicleBooking?.vehicle?.brand} {b.vehicleBooking?.vehicle?.model}
                                     </td>
                                     <td className="py-4 px-4 text-right">
                                         <span className="font-semibold text-slate-900 dark:text-white transition-colors">{formatPrice(b.totalPrice)}</span>
@@ -473,7 +425,7 @@ export default function AdminDashboard() {
 
                             {(!kpis?.recentBookings || kpis.recentBookings.length === 0) && (
                                 <tr>
-                                    <td colSpan={6} className="py-12 text-center text-slate-500">
+                                    <td colSpan={5} className="py-12 text-center text-slate-500">
                                         <CalendarCheck className="w-10 h-10 mx-auto mb-3 opacity-30" />
                                         <p>Nenhuma reserva registada ainda</p>
                                     </td>

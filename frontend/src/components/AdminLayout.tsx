@@ -5,7 +5,7 @@ import api from '../lib/api';
 import { notificationsService } from '../services/notifications.service';
 import type { Notification } from '../services/notifications.service';
 import {
-    LayoutDashboard, Car, ArrowLeftRight, CalendarCheck, ChevronLeft,
+    LayoutDashboard, Bus, CalendarCheck, ChevronLeft,
     LogOut, Users, Bell, Settings, Sun, Moon, Briefcase
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
@@ -61,8 +61,7 @@ export default function AdminLayout() {
 
     const sidebarLinks = [
         { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-        { to: '/admin/vehicles', label: 'Viaturas', icon: Car },
-        { to: '/admin/transfers', label: 'Transfers', icon: ArrowLeftRight },
+        { to: '/admin/vehicles', label: 'Frota', icon: Bus },
         { to: '/admin/bookings', label: 'Reservas', icon: CalendarCheck, badge: pendingCount },
         { to: '/admin/corporate', label: 'Empresas', icon: Briefcase },
         { to: '/admin/clients', label: 'Clientes', icon: Users },

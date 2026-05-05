@@ -1,0 +1,67 @@
+# Workflow simples para fazer build e deploy de site estático pro GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Roda esse workflow a cada push pras branches configuradas (main, master ou novaDrive_V1.0)
+  push:
+    branches: ['main', 'master', 'novaDrive_V1.0']
+
+  # Permite rodar esse workflow manualmente a partir da aba Actions
+  workflow_dispatch:
+
+# Permissões necessárias pra fazer deploy pro GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Permite apenas um deploy simultâneo pra não sobrepor builds
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  # Trabalho único pra fazer build e deploy
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        # Pega o nome do repositório (ex: usuario/nome-do-repo) e extrai só a segunda parte
+        # Passa isso pro Vite como --base=/nome-do-repo/
+        run: |
+          REPO_NAME=${GITHUB_REPOSITORY#*/}
+          if [ "$REPO_NAME" == "${GITHUB_REPOSITORY_OWNER}.github.io" ]; then
+            npm run build -- --base=/
+          else
+            npm run build -- --base=/$REPO_NAME/
+          fi
+          # Suporte para SPA no GitHub Pages (redireciona 404 para o index)
+          cp dist/index.html dist/404.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

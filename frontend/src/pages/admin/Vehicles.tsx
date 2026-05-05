@@ -139,17 +139,17 @@ export default function AdminVehicles() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10 transition-colors">
-                <div className="animate-fade-in-up">
-                    <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-2 text-slate-900 dark:text-white transition-colors">
-                        Gestão de <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">Viaturas</span>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white">
+                        Gestão de <span className="text-brand-500">Viaturas</span>
                     </h1>
-                    <p className="text-slate-500 dark:text-slate-400 text-lg transition-colors">{data?.meta?.total || 0} viaturas registadas na frota</p>
+                    <p className="text-gray-500 dark:text-zinc-400 text-sm mt-1">{data?.meta?.total || 0} viaturas registadas na frota</p>
                 </div>
-                <div className="flex gap-3 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                <div className="flex gap-3">
                     <button
                         onClick={() => { resetForm(); setShowForm(true); }}
-                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold flex items-center gap-2 shadow-lg shadow-teal-500/25 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all"
+                        className="px-5 py-2.5 rounded-xl bg-brand-500 text-white font-bold flex items-center gap-2 shadow-lg shadow-brand-500/25 hover:bg-brand-600 transition-all"
                     >
                         <Plus className="w-5 h-5" /> Nova Viatura
                     </button>
@@ -159,13 +159,11 @@ export default function AdminVehicles() {
             {/* Form Modal */}
             {showForm && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 dark:bg-black/80 backdrop-blur-md p-4 animate-fade-in-up">
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative transition-colors">
-                        {/* Soft glow behind modal */}
-                        <div className="absolute -top-32 -left-32 w-64 h-64 bg-teal-500/10 dark:bg-teal-500/20 rounded-full blur-[100px] pointer-events-none transition-colors" />
+                    <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/6 rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative">
 
-                        <div className="flex items-center justify-between mb-8 relative z-10">
-                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white transition-colors">{editId ? 'Editar Viatura' : 'Nova Viatura'}</h2>
-                            <button onClick={resetForm} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 transition-colors text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl font-black text-gray-900 dark:text-white">{editId ? 'Editar Viatura' : 'Nova Viatura'}</h2>
+                            <button onClick={resetForm} className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 transition-colors text-gray-500 dark:text-zinc-400">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -175,22 +173,22 @@ export default function AdminVehicles() {
                                 <div>
                                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider transition-colors">Marca *</label>
                                     <input type="text" value={form.brand} onChange={e => setForm({ ...form, brand: e.target.value })} required
-                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent transition-all" />
+                className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider transition-colors">Modelo *</label>
                                     <input type="text" value={form.model} onChange={e => setForm({ ...form, model: e.target.value })} required
-                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent transition-all" />
+                className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider transition-colors">Ano</label>
                                     <input type="number" value={form.year} onChange={e => setForm({ ...form, year: Number(e.target.value) })}
-                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent transition-all" />
+                className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider transition-colors">Categoria</label>
                                     <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
-                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent transition-all">
+                className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all">
                                         <option value="SUV">SUV</option>
                                         <option value="Económico">Económico</option>
                                         <option value="Luxo">Luxo</option>
@@ -201,7 +199,7 @@ export default function AdminVehicles() {
                                 <div>
                                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider transition-colors">Transmissão</label>
                                     <select value={form.transmission} onChange={e => setForm({ ...form, transmission: e.target.value })}
-                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent transition-all">
+                className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all">
                                         <option value="Automática">Automática</option>
                                         <option value="Manual">Manual</option>
                                     </select>
@@ -209,7 +207,7 @@ export default function AdminVehicles() {
                                 <div>
                                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider transition-colors">Combustível</label>
                                     <select value={form.fuelType} onChange={e => setForm({ ...form, fuelType: e.target.value })}
-                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent transition-all">
+                className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all">
                                         <option value="Gasolina">Gasolina</option>
                                         <option value="Diesel">Diesel</option>
                                         <option value="Híbrido">Híbrido</option>
@@ -219,12 +217,12 @@ export default function AdminVehicles() {
                                 <div>
                                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider transition-colors">Lugares</label>
                                     <input type="number" value={form.seats} onChange={e => setForm({ ...form, seats: Number(e.target.value) })} min={1}
-                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent transition-all" />
+                className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider transition-colors">Preço/dia (MT) *</label>
                                     <input type="number" value={form.pricePerDay} onChange={e => setForm({ ...form, pricePerDay: Number(e.target.value) })} min={0} required
-                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent transition-all" />
+                className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all" />
                                 </div>
                             </div>
                             <div>
@@ -239,11 +237,11 @@ export default function AdminVehicles() {
                             </div>
 
                             <div className="flex gap-4 pt-6">
-                                <button type="button" onClick={resetForm} className="flex-1 px-5 py-3 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors">
+                                <button type="button" onClick={resetForm} className="flex-1 px-5 py-3 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-sm font-semibold text-gray-600 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
                                     Cancelar
                                 </button>
                                 <button type="submit" disabled={saveMutation.isPending}
-                                    className="flex-1 px-5 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-500/25 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                    className="flex-1 px-5 py-3 rounded-xl bg-brand-500 text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/25 hover:bg-brand-600 transition-all disabled:opacity-50">
                                     {saveMutation.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
                                     {editId ? 'Guardar Alterações' : 'Adicionar Frota'}
                                 </button>
@@ -410,7 +408,7 @@ export default function AdminVehicles() {
                                         <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-600 dark:text-slate-300 group-hover:border-slate-300 dark:group-hover:border-white/20 transition-colors">{v.category}</span>
                                     </td>
                                     <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400 transition-colors">{v.transmission}</td>
-                                    <td className="py-4 px-6 text-right font-bold text-teal-600 dark:text-teal-400 transition-colors">{Number(v.pricePerDay).toLocaleString()} <span className="text-xs text-slate-500 font-normal">MT/dia</span></td>
+                                    <td className="py-4 px-6 text-right font-bold text-brand-500">{Number(v.pricePerDay).toLocaleString()} <span className="text-xs text-gray-500 dark:text-zinc-400 font-normal">MT/dia</span></td>
                                     <td className="py-4 px-6">
                                         <div className="flex items-center justify-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity">
                                             <button

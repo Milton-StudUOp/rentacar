@@ -1,20 +1,23 @@
-import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import api from '../lib/api';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Car, ArrowLeftRight, LogIn, UserPlus, Loader2, MapPin } from 'lucide-react';
+import { Car, LogIn, UserPlus, Loader2, CheckCircle2 } from 'lucide-react';
 import { formatPrice } from '../lib/utils';
 import Flatpickr from 'react-flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt';
 import 'flatpickr/dist/flatpickr.css';
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
+
+const inputCls = "w-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:border-brand-500/60 focus:ring-1 focus:ring-brand-500/20 transition-all";
+const labelCls = "block text-xs font-semibold text-gray-500 dark:text-zinc-400 mb-1.5 uppercase tracking-wider";
 
 export default function Checkout() {
-    const { type, id } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
     const { isAuthenticated, login, register } = useAuth();
 
     const [authTab, setAuthTab] = useState<'login' | 'register'>('register');
@@ -22,486 +25,202 @@ export default function Checkout() {
     const [registerForm, setRegisterForm] = useState({ name: '', phone: '', email: '', password: '' });
     const [authLoading, setAuthLoading] = useState(false);
 
-    // Vehicle booking form
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [notes, setNotes] = useState('');
 
-    // Transfer booking form (pre-filled from search params)
-    const [travelDate, setTravelDate] = useState(searchParams.get('date') || '');
-    const [travelTime, setTravelTime] = useState(searchParams.get('time') || '');
-    const [isRoundTrip] = useState(searchParams.get('isRoundTrip') === 'true');
-    const [returnDate, setReturnDate] = useState(searchParams.get('returnDate') || '');
-    const [returnTime, setReturnTime] = useState(searchParams.get('returnTime') || '');
-    const [passengers, setPassengers] = useState(Number(searchParams.get('passengers')) || 1);
-    const origin = searchParams.get('origin') || '';
-    const destination = searchParams.get('destination') || '';
-
-    const isVehicle = type === 'vehicle';
-
     const { data: vehicle } = useQuery({
         queryKey: ['vehicle', id],
         queryFn: () => api.get(`/vehicles/${id}`).then(r => r.data),
-        enabled: isVehicle && !!id && id !== '0',
-    });
-
-    const { data: service } = useQuery({
-        queryKey: ['service', id],
-        queryFn: () => api.get(`/transfers/services/${id}`).then(r => r.data),
-        enabled: !isVehicle && !!id,
+        enabled: !!id && id !== '0',
     });
 
     const bookVehicle = useMutation({
         mutationFn: (data: { vehicleId: number; startDate: string; endDate: string; notes?: string }) => api.post('/bookings/vehicle', data),
-        onSuccess: () => {
-            toast.success('Reserva de veículo criada com sucesso!');
-            navigate('/my-bookings');
-        },
-        onError: (err: { response?: { data?: { message?: string } } }) => {
-            toast.error(err.response?.data?.message || 'Erro ao criar reserva');
-        },
-    });
-
-    const bookTransfer = useMutation({
-        mutationFn: (data: { serviceId: number; origin: string; destination: string; travelDate: string; travelTime: string; passengers: number; isRoundTrip: boolean; returnDate?: string; returnTime?: string; notes?: string }) => api.post('/bookings/transfer', data),
-        onSuccess: () => {
-            toast.success('Pedido de cotação de Transfer enviado com sucesso!');
-            navigate('/my-bookings');
-        },
-        onError: (err: { response?: { data?: { message?: string } } }) => {
-            toast.error(err.response?.data?.message || 'Erro ao solicitar transfer');
-        },
+        onSuccess: () => { toast.success('Pedido de proposta enviado com sucesso!'); navigate('/my-bookings'); },
+        onError: (err: { response?: { data?: { message?: string } } }) => { toast.error(err.response?.data?.message || 'Erro ao enviar pedido'); },
     });
 
     const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setAuthLoading(true);
+        e.preventDefault(); setAuthLoading(true);
         try {
-            const normalizedLogin = loginForm.login.replace(/\s+/g, '');
-            await login(normalizedLogin, loginForm.password);
+            await login(loginForm.login.replace(/\s+/g, ''), loginForm.password);
             toast.success('Login efectuado!');
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
             toast.error(error.response?.data?.message || 'Credenciais inválidas');
-        } finally {
-            setAuthLoading(false);
-        }
+        } finally { setAuthLoading(false); }
     };
 
     const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setAuthLoading(true);
+        e.preventDefault(); setAuthLoading(true);
         try {
-            const normalizedData = {
-                ...registerForm,
-                phone: registerForm.phone.replace(/\s+/g, ''),
-            };
-            await register(normalizedData);
+            await register({ ...registerForm, phone: registerForm.phone.replace(/\s+/g, '') });
             toast.success('Conta criada com sucesso!');
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
             toast.error(error.response?.data?.message || 'Erro no cadastro');
-        } finally {
-            setAuthLoading(false);
-        }
+        } finally { setAuthLoading(false); }
     };
 
     const handleBooking = () => {
-        if (isVehicle) {
-            if (!startDate || !endDate) { toast.error('Selecione as datas'); return; }
-            bookVehicle.mutate({ vehicleId: Number(id), startDate, endDate, notes });
-        } else {
-            if (!origin || !destination || !travelDate || !travelTime || !passengers) { toast.error('Preencha os dados do transfer'); return; }
-            if (isRoundTrip && (!returnDate || !returnTime)) { toast.error('Preencha os dados de regresso'); return; }
-            bookTransfer.mutate({ serviceId: Number(id), origin, destination, travelDate, travelTime, passengers, isRoundTrip, returnDate, returnTime, notes });
-        }
+        if (!startDate || !endDate) { toast.error('Selecione as datas do contrato'); return; }
+        bookVehicle.mutate({ vehicleId: Number(id), startDate, endDate, notes });
     };
 
     const days = startDate && endDate ? Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / 86400000) : 0;
-    const totalPrice = isVehicle && vehicle ? days * Number(vehicle.pricePerDay) : 0;
+    const totalPrice = vehicle ? days * Number(vehicle.pricePerDay) : 0;
 
     return (
-        <div className="min-h-screen py-8 transition-colors duration-300">
+        <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-300 pt-24 pb-16">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-bold mb-8 text-slate-900 dark:text-white transition-colors">
-                    {isAuthenticated ? 'Finalizar Reserva' : 'Identificação'}
-                </h1>
+
+                {/* Header */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-500 text-xs font-bold uppercase tracking-widest mb-4">
+                        {isAuthenticated ? 'Solicitação B2B' : 'Identificação'}
+                    </div>
+                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">
+                        {isAuthenticated ? 'Solicitar Proposta B2B' : 'Identificação Corporativa'}
+                    </h1>
+                </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                    {/* Left - Auth + Form */}
-                    <div className="lg:col-span-3 space-y-6">
-                        {/* Auth Section */}
+                    {/* ── Auth + Form ──────────────────── */}
+                    <div className="lg:col-span-3 space-y-5">
                         {!isAuthenticated && (
-                            <div className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md rounded-2xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors">
-                                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white transition-colors">Identifique-se para continuar</h2>
-                                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 transition-colors">
-                                    Para finalizar a sua solicitação, faça login ou crie uma conta rápida.
-                                </p>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                                className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/6 rounded-2xl p-6 shadow-sm dark:shadow-none">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Identifique-se para continuar</h2>
+                                <p className="text-sm text-gray-500 dark:text-zinc-400 mb-6">Para finalizar a sua solicitação, faça login ou crie uma conta rápida.</p>
 
                                 {/* Tabs */}
-                                <div className="flex gap-2 mb-6">
-                                    <button
-                                        onClick={() => setAuthTab('login')}
-                                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${authTab === 'login' ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 shadow-sm' : 'bg-slate-50 dark:bg-transparent text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/5'}`}
-                                        id="auth-login-tab"
-                                    >
-                                        <LogIn className="w-4 h-4" /> Já tenho conta
-                                    </button>
-                                    <button
-                                        onClick={() => setAuthTab('register')}
-                                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${authTab === 'register' ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 shadow-sm' : 'bg-slate-50 dark:bg-transparent text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/5'}`}
-                                        id="auth-register-tab"
-                                    >
-                                        <UserPlus className="w-4 h-4" /> Cadastro rápido
-                                    </button>
+                                <div className="flex gap-2 p-1 bg-gray-100 dark:bg-zinc-800 rounded-xl mb-6">
+                                    {[{ id: 'login' as const, icon: LogIn, label: 'Já tenho conta' }, { id: 'register' as const, icon: UserPlus, label: 'Cadastro rápido' }].map(tab => (
+                                        <button key={tab.id} onClick={() => setAuthTab(tab.id)} id={`auth-${tab.id}-tab`}
+                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${authTab === tab.id ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-zinc-400'}`}>
+                                            <tab.icon className="w-4 h-4" /> {tab.label}
+                                        </button>
+                                    ))}
                                 </div>
 
                                 {authTab === 'login' ? (
                                     <form onSubmit={handleLogin} className="space-y-4">
+                                        <div><label className={labelCls}>Email ou Telefone</label>
+                                            <input type="text" value={loginForm.login} onChange={e => setLoginForm({ ...loginForm, login: e.target.value })} className={inputCls} placeholder="email@exemplo.com ou +258..." required id="login-email" /></div>
                                         <div>
-                                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Email ou Telefone</label>
-                                            <input
-                                                type="text"
-                                                value={loginForm.login}
-                                                onChange={(e) => setLoginForm({ ...loginForm, login: e.target.value })}
-                                                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teal-500/50 transition-colors"
-                                                placeholder="email@exemplo.com ou +258..."
-                                                required
-                                                id="login-email"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Senha</label>
-                                            <input
-                                                type="password"
-                                                value={loginForm.password}
-                                                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                                                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-teal-500/50 transition-colors"
-                                                required
-                                                id="login-password"
-                                            />
-                                            <div className="flex justify-end mt-1">
-                                                <Link
-                                                    to="/forgot-password"
-                                                    className="text-xs font-medium text-teal-600 dark:text-teal-400 hover:underline underline-offset-2 transition-colors"
-                                                >
-                                                    Esqueceu a senha?
-                                                </Link>
+                                            <label className={labelCls}>Senha</label>
+                                            <input type="password" value={loginForm.password} onChange={e => setLoginForm({ ...loginForm, password: e.target.value })} className={inputCls} required id="login-password" />
+                                            <div className="flex justify-end mt-1.5">
+                                                <Link to="/forgot-password" className="text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors">Esqueceu a senha?</Link>
                                             </div>
                                         </div>
-                                        <button
-                                            type="submit"
-                                            disabled={authLoading}
-                                            className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2 hover:from-teal-600 hover:to-cyan-600 dark:hover:from-teal-400 dark:hover:to-cyan-400 transition-all shadow-lg shadow-teal-500/25"
-                                            id="login-submit-btn"
-                                        >
-                                            {authLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                                            Entrar
+                                        <button type="submit" disabled={authLoading} id="login-submit-btn"
+                                            className="w-full py-3.5 rounded-xl bg-brand-500 text-white font-bold hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/25 disabled:opacity-50 flex items-center justify-center gap-2">
+                                            {authLoading && <Loader2 className="w-4 h-4 animate-spin" />} Entrar
                                         </button>
                                     </form>
                                 ) : (
                                     <form onSubmit={handleRegister} className="space-y-4">
-                                        <div>
-                                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Nome completo *</label>
-                                            <input
-                                                type="text"
-                                                value={registerForm.name}
-                                                onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
-                                                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-teal-500/50 transition-colors"
-                                                required
-                                                id="register-name"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Telefone (Moçambique) *</label>
-                                            <input
-                                                type="tel"
-                                                value={registerForm.phone}
-                                                onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value })}
-                                                placeholder="+258 84 000 0000"
-                                                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-teal-500/50 transition-colors"
-                                                required
-                                                id="register-phone"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Email (recomendado)</label>
-                                            <input
-                                                type="email"
-                                                value={registerForm.email}
-                                                onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
-                                                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-teal-500/50 transition-colors"
-                                                id="register-email"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Criar senha *</label>
-                                            <input
-                                                type="password"
-                                                value={registerForm.password}
-                                                onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                                                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-teal-500/50 transition-colors"
-                                                required
-                                                minLength={6}
-                                                id="register-password"
-                                            />
-                                        </div>
-                                        <button
-                                            type="submit"
-                                            disabled={authLoading}
-                                            className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2 hover:from-teal-600 hover:to-cyan-600 dark:hover:from-teal-400 dark:hover:to-cyan-400 transition-all shadow-lg shadow-teal-500/25"
-                                            id="register-submit-btn"
-                                        >
-                                            {authLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                                            Criar conta e continuar
+                                        {[
+                                            { label: 'Nome completo *', type: 'text', key: 'name', placeholder: 'Seu nome completo', id: 'register-name' },
+                                            { label: 'Telefone (Moçambique) *', type: 'tel', key: 'phone', placeholder: '+258 84 000 0000', id: 'register-phone' },
+                                            { label: 'Email (recomendado)', type: 'email', key: 'email', placeholder: 'exemplo@empresa.com', id: 'register-email' },
+                                            { label: 'Criar senha *', type: 'password', key: 'password', placeholder: 'Mínimo 6 caracteres', id: 'register-password' },
+                                        ].map(f => (
+                                            <div key={f.key}>
+                                                <label className={labelCls}>{f.label}</label>
+                                                <input type={f.type} value={registerForm[f.key as keyof typeof registerForm]}
+                                                    onChange={e => setRegisterForm({ ...registerForm, [f.key]: e.target.value })}
+                                                    className={inputCls} placeholder={f.placeholder} required={f.label.includes('*')} id={f.id} />
+                                            </div>
+                                        ))}
+                                        <button type="submit" disabled={authLoading} id="register-submit-btn"
+                                            className="w-full py-3.5 rounded-xl bg-brand-500 text-white font-bold hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/25 disabled:opacity-50 flex items-center justify-center gap-2">
+                                            {authLoading && <Loader2 className="w-4 h-4 animate-spin" />} Criar conta e continuar
                                         </button>
                                     </form>
                                 )}
-                            </div>
+                            </motion.div>
                         )}
 
-                        {/* Booking Details Form */}
                         {isAuthenticated && (
-                            <div className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md rounded-2xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors">
-                                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white transition-colors">
-                                    {isVehicle ? 'Detalhes da Reserva' : 'Confirmar Pedido de Transfer'}
-                                </h2>
-
-                                <div className="space-y-4">
-                                    {isVehicle ? (
-                                        <>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Data de levantamento *</label>
-                                                    <Flatpickr
-                                                        value={startDate}
-                                                        onChange={([date]) => setStartDate(date ? format(date, 'yyyy-MM-dd') : '')}
-                                                        options={{
-                                                            locale: Portuguese,
-                                                            dateFormat: 'd/m/Y',
-                                                            minDate: 'today',
-                                                        }}
-                                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-teal-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
-                                                        placeholder="dd/mm/aaaa"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Data de devolução *</label>
-                                                    <Flatpickr
-                                                        value={endDate}
-                                                        onChange={([date]) => setEndDate(date ? format(date, 'yyyy-MM-dd') : '')}
-                                                        options={{
-                                                            locale: Portuguese,
-                                                            dateFormat: 'd/m/Y',
-                                                            minDate: startDate || 'today',
-                                                        }}
-                                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-teal-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
-                                                        placeholder="dd/mm/aaaa"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="space-y-4 bg-slate-50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/10 mb-6 transition-colors">
-                                                <div className="flex items-start gap-3">
-                                                    <MapPin className="w-5 h-5 text-teal-500 dark:text-teal-400 mt-1 transition-colors" />
-                                                    <div>
-                                                        <p className="text-xs text-slate-500 dark:text-slate-400 transition-colors">Origem da Viagem</p>
-                                                        <p className="text-sm font-medium text-slate-900 dark:text-white transition-colors">{origin || '-'}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-start gap-3">
-                                                    <MapPin className="w-5 h-5 text-cyan-500 dark:text-cyan-400 mt-1 transition-colors" />
-                                                    <div>
-                                                        <p className="text-xs text-slate-500 dark:text-slate-400 transition-colors">Destino da Viagem</p>
-                                                        <p className="text-sm font-medium text-slate-900 dark:text-white transition-colors">{destination || '-'}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Data da viagem *</label>
-                                                    <Flatpickr
-                                                        value={travelDate}
-                                                        onChange={([date]) => setTravelDate(date ? format(date, 'yyyy-MM-dd') : '')}
-                                                        options={{
-                                                            locale: Portuguese,
-                                                            dateFormat: 'd/m/Y',
-                                                            minDate: 'today',
-                                                        }}
-                                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-teal-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
-                                                        placeholder="dd/mm/aaaa"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Hora da ida *</label>
-                                                    <Flatpickr
-                                                        value={travelTime}
-                                                        onChange={([date]) => setTravelTime(date ? date.toTimeString().slice(0, 5) : '')}
-                                                        options={{
-                                                            enableTime: true,
-                                                            noCalendar: true,
-                                                            dateFormat: 'H:i',
-                                                            time_24hr: true,
-                                                        }}
-                                                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-teal-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
-                                                        placeholder="HH:MM"
-                                                        id="booking-travel-time"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {isRoundTrip && (
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                                                    <div>
-                                                        <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Data de regresso *</label>
-                                                        <Flatpickr
-                                                            value={returnDate}
-                                                            onChange={([date]) => setReturnDate(date ? format(date, 'yyyy-MM-dd') : '')}
-                                                            options={{
-                                                                locale: Portuguese,
-                                                                dateFormat: 'd/m/Y',
-                                                                minDate: travelDate || 'today',
-                                                            }}
-                                                            className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-teal-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
-                                                            placeholder="dd/mm/aaaa"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Hora do regresso *</label>
-                                                        <Flatpickr
-                                                            value={returnTime}
-                                                            onChange={([date]) => setReturnTime(date ? date.toTimeString().slice(0, 5) : '')}
-                                                            options={{
-                                                                enableTime: true,
-                                                                noCalendar: true,
-                                                                dateFormat: 'H:i',
-                                                                time_24hr: true,
-                                                            }}
-                                                            className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-900"
-                                                            placeholder="HH:MM"
-                                                            id="booking-return-time"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            <div className="mt-4">
-                                                <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Passageiros *</label>
-                                                <input
-                                                    type="number"
-                                                    min={1}
-                                                    max={service?.capacity || 10}
-                                                    value={passengers}
-                                                    onChange={(e) => setPassengers(Number(e.target.value))}
-                                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-teal-500/50 transition-colors"
-                                                    id="booking-passengers"
-                                                />
-                                            </div>
-
-                                            <div className="mt-4 p-4 rounded-lg bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/20 text-sm text-teal-700 dark:text-teal-400/90 leading-relaxed font-medium transition-colors">
-                                                Nota: Ao submeter os dados, a nossa equipa irá providenciar o melhor veículo com a capacidade adequada e informá-lo da cotação exata o mais rápido possível para a sua aprovação.
-                                            </div>
-                                        </>
-                                    )}
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                                className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/6 rounded-2xl p-6 shadow-sm dark:shadow-none">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Detalhes do Contrato</h2>
+                                <div className="space-y-5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                        <div>
+                                            <label className={labelCls}>Início do Contrato *</label>
+                                            <Flatpickr value={startDate} onChange={([date]) => setStartDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                                                options={{ locale: Portuguese, dateFormat: 'd/m/Y', minDate: 'today' }} className={inputCls} placeholder="dd/mm/aaaa" />
+                                        </div>
+                                        <div>
+                                            <label className={labelCls}>Fim do Contrato *</label>
+                                            <Flatpickr value={endDate} onChange={([date]) => setEndDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                                                options={{ locale: Portuguese, dateFormat: 'd/m/Y', minDate: startDate || 'today' }} className={inputCls} placeholder="dd/mm/aaaa" />
+                                        </div>
+                                    </div>
                                     <div>
-                                        <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 transition-colors">Observações / Requisitos Especiais</label>
-                                        <textarea
-                                            value={notes}
-                                            onChange={(e) => setNotes(e.target.value)}
-                                            rows={3}
-                                            className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-teal-500/50 resize-none transition-colors"
-                                            placeholder="Ex: Cadeira de bebé, muita bagagem extra..."
-                                            id="booking-notes"
-                                        />
+                                        <label className={labelCls}>Observações / Requisitos Especiais</label>
+                                        <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
+                                            className={`${inputCls} resize-none`} placeholder="Ex: Cadeira de bebé, muita bagagem extra..." id="booking-notes" />
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         )}
                     </div>
 
-                    {/* Right - Summary */}
+                    {/* ── Summary Card ──────────────────── */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md rounded-2xl p-6 md:sticky md:top-24 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors">
-                            <h3 className="font-semibold mb-4 text-slate-900 dark:text-white transition-colors">Resumo do Pedido</h3>
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}
+                            className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/6 rounded-2xl p-6 md:sticky md:top-24 shadow-sm dark:shadow-none">
+                            <h3 className="font-bold text-gray-900 dark:text-white mb-5">Resumo da Proposta</h3>
 
-                            {isVehicle && vehicle && <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-200 dark:border-white/5 transition-colors">
-                                {vehicle.images?.[0]?.url ? (
-                                    <div className="w-16 h-12 rounded-lg overflow-hidden ring-1 ring-slate-200 dark:ring-white/10">
-                                        <img src={vehicle.images[0].url} alt={vehicle.model} className="w-full h-full object-cover" />
-                                    </div>
-                                ) : (
-                                    <div className="w-16 h-12 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center transition-colors">
-                                        <Car className="w-6 h-6 text-slate-400 dark:text-slate-600" />
-                                    </div>
-                                )}
-                                <div>
-                                    <p className="font-medium text-sm text-slate-900 dark:text-white transition-colors">{vehicle.brand} {vehicle.model}</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 transition-colors">{vehicle.category} · {vehicle.year}</p>
-                                </div>
-                            </div>
-                            }
-
-                            {!isVehicle && service && (
-                                <div className="flex justify-between items-center gap-3 mb-4 pb-4 border-b border-slate-200 dark:border-white/5 transition-colors">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-16 h-12 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative overflow-hidden ring-1 ring-slate-200 dark:ring-white/10 transition-colors">
-                                            {isRoundTrip ? (
-                                                <div className="absolute inset-0 bg-gradient-to-br from-teal-50 dark:from-teal-500/20 to-cyan-50 dark:to-cyan-500/20 flex items-center justify-center transition-colors">
-                                                    <ArrowLeftRight className="w-6 h-6 text-cyan-500 dark:text-cyan-400" />
-                                                </div>
-                                            ) : (
-                                                <ArrowLeftRight className="w-6 h-6 text-teal-500 dark:text-teal-400 transition-colors" />
-                                            )}
+                            {vehicle && (
+                                <div className="flex items-center gap-3 mb-5 pb-5 border-b border-gray-100 dark:border-white/5">
+                                    {vehicle.images?.[0]?.url
+                                        ? <div className="w-16 h-12 rounded-xl overflow-hidden border border-gray-200 dark:border-white/8 shrink-0">
+                                            <img src={vehicle.images[0].url} alt={vehicle.model} className="w-full h-full object-cover" />
                                         </div>
-                                        <div>
-                                            <p className="font-medium text-sm text-slate-900 dark:text-white transition-colors">{service.name}</p>
-                                            <div className="flex items-center gap-2 mt-0.5">
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap transition-colors">Até {service.capacity} Passageiros</p>
-                                                {isRoundTrip && (
-                                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-50 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 tracking-wider uppercase transition-colors">Ida e Volta</span>
-                                                )}
-                                            </div>
+                                        : <div className="w-16 h-12 rounded-xl bg-gray-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+                                            <Car className="w-6 h-6 text-gray-400 dark:text-zinc-600" />
                                         </div>
+                                    }
+                                    <div>
+                                        <p className="font-bold text-sm text-gray-900 dark:text-white">{vehicle.brand} {vehicle.model}</p>
+                                        <p className="text-xs text-gray-500 dark:text-zinc-400">{vehicle.category} · {vehicle.year}</p>
                                     </div>
                                 </div>
                             )}
 
-                            <div className="space-y-2 text-sm mb-4">
-                                {isVehicle && days > 0 && (
-                                    <div className="flex justify-between text-slate-600 dark:text-slate-400 transition-colors">
-                                        <span>{days} dia{days > 1 ? 's' : ''} × {formatPrice(vehicle?.pricePerDay)} MT</span>
-                                    </div>
-                                )}
-                            </div>
+                            {days > 0 && (
+                                <div className="text-sm text-gray-500 dark:text-zinc-400 mb-3">
+                                    {days} dia{days > 1 ? 's' : ''} × {formatPrice(vehicle?.pricePerDay)} MT
+                                </div>
+                            )}
 
-                            <div className="flex justify-between items-center py-4 border-t border-slate-200 dark:border-white/5 relative group cursor-help transition-all">
-                                <span className="font-semibold text-slate-900 dark:text-white transition-colors">{isVehicle ? 'Total' : 'Cotação'}</span>
-                                <span className={`text-2xl font-bold ${!isVehicle ? 'text-cyan-600 dark:text-cyan-400' : 'text-teal-600 dark:text-teal-400'} transition-colors`}>
-                                    {isVehicle ? `${formatPrice(totalPrice)} MT` : 'A definir'}
-                                </span>
+                            <div className="flex justify-between items-center py-4 border-t border-gray-100 dark:border-white/5">
+                                <span className="font-bold text-gray-900 dark:text-white">Estimativa B2B</span>
+                                <span className="text-2xl font-black text-brand-500">{formatPrice(totalPrice)} MT</span>
                             </div>
 
                             {isAuthenticated && (
-                                <button
-                                    onClick={handleBooking}
-                                    disabled={bookVehicle.isPending || bookTransfer.isPending}
-                                    className="w-full mt-4 px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 dark:hover:from-teal-400 dark:hover:to-cyan-400 transition-all shadow-lg shadow-teal-500/25 disabled:opacity-50 flex items-center justify-center gap-2"
-                                    id="confirm-booking-btn"
-                                >
-                                    {(bookVehicle.isPending || bookTransfer.isPending) && <Loader2 className="w-4 h-4 animate-spin" />}
-                                    {isVehicle ? 'Confirmar Reserva' : 'Solicitar Cotação'}
+                                <button onClick={handleBooking} disabled={bookVehicle.isPending}
+                                    className="w-full mt-4 py-4 rounded-2xl bg-brand-500 text-white font-bold hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/25 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    id="confirm-booking-btn">
+                                    {bookVehicle.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                                    Solicitar Proposta Comercial
                                 </button>
                             )}
 
                             {!isAuthenticated && (
-                                <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-4 transition-colors">
-                                    Complete a identificação para finalizar
-                                </p>
+                                <div className="mt-4 p-4 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-white/6 text-center">
+                                    <CheckCircle2 className="w-5 h-5 text-gray-400 dark:text-zinc-500 mx-auto mb-1" />
+                                    <p className="text-sm text-gray-500 dark:text-zinc-400">Complete a identificação para finalizar</p>
+                                </div>
                             )}
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </div>

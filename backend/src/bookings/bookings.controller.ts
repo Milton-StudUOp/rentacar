@@ -15,11 +15,7 @@ export class BookingsController {
         return this.bookingsService.createVehicleBooking(req.user.sub, body);
     }
 
-    @Post('transfer')
-    @UseGuards(JwtAuthGuard)
-    createTransferBooking(@Req() req: any, @Body() body: any) {
-        return this.bookingsService.createTransferBooking(req.user.sub, body);
-    }
+
 
     @Get('my')
     @UseGuards(JwtAuthGuard)
@@ -32,7 +28,6 @@ export class BookingsController {
     findAllAdmin(
         @Query('status') status?: any,
         @Query('statuses') statuses?: string,
-        @Query('type') type?: any,
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
         @Query('sortBy') sortBy?: string,
@@ -42,7 +37,6 @@ export class BookingsController {
         return this.bookingsService.findAllAdmin({
             status,
             statuses,
-            type,
             startDate,
             endDate,
             sortBy,
@@ -51,14 +45,7 @@ export class BookingsController {
         });
     }
 
-    @Put(':id/price')
-    @UseGuards(JwtAuthGuard, AdminGuard)
-    setTransferPrice(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() body: { price: number },
-    ) {
-        return this.bookingsService.setTransferPrice(id, body.price);
-    }
+
 
     @Get(':id')
     @UseGuards(JwtAuthGuard)

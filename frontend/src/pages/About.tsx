@@ -1,142 +1,260 @@
-import { Building2, Eye, Target, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
+import { Building2, Eye, Target, ShieldCheck, ArrowRight, Quote, Car, Award, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useRef, useCallback } from 'react';
+import { getPublicUrl } from '../utils/assetUrl';
+
+/* ── Magnetic button ──────────────────────────────────── */
+function MagneticButton({ children, href, className = "" }: { children: React.ReactNode; href?: string; className?: string }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const sx = useSpring(x, { stiffness: 200, damping: 15 });
+    const sy = useSpring(y, { stiffness: 200, damping: 15 });
+
+    const handleMove = useCallback((e: React.MouseEvent) => {
+        if (!ref.current) return;
+        const rect = ref.current.getBoundingClientRect();
+        x.set((e.clientX - rect.left - rect.width / 2) * 0.35);
+        y.set((e.clientY - rect.top - rect.height / 2) * 0.35);
+    }, [x, y]);
+
+    const content = (
+        <motion.div
+            ref={ref}
+            style={{ x: sx, y: sy }}
+            onMouseMove={handleMove}
+            onMouseLeave={() => { x.set(0); y.set(0); }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            className={`inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-brand-500 text-white font-bold text-lg glow-red cursor-pointer select-none ${className}`}
+        >
+            {children}
+        </motion.div>
+    );
+
+    if (href) {
+        return <Link to={href}>{content}</Link>;
+    }
+    return content;
+}
+
+const fadeUp: any = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+};
+
+const stagger: any = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+};
 
 export default function About() {
+    const { scrollY } = useScroll();
+    const yBg = useTransform(scrollY, [0, 1000], [0, 200]);
+    const opacityBg = useTransform(scrollY, [0, 600], [0.3, 0]);
+
     return (
-        <div className="bg-slate-50 dark:bg-[#0a0d18] transition-colors duration-300 min-h-screen">
+        <div className="bg-slate-50 dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white overflow-hidden selection:bg-brand-500/30 transition-colors duration-300">
+            
+            {/* ── Premium Hero Header ─────────────────────────────────────── */}
+            <div className="relative min-h-[70vh] flex items-center justify-center pt-24 pb-20 overflow-hidden bg-white dark:bg-transparent transition-colors duration-300">
+                {/* Background layers */}
+                <motion.div 
+                    style={{ y: yBg, opacity: opacityBg, backgroundImage: `url(${getPublicUrl('/hero-fleet.png')})` }}
+                    className="absolute inset-0 bg-cover bg-center mix-blend-luminosity dark:mix-blend-luminosity opacity-10 dark:opacity-25 pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 via-white/90 to-slate-50 dark:from-[#0a0a0c]/80 dark:via-[#0a0a0c]/90 dark:to-[#0a0a0c] pointer-events-none transition-colors duration-300" />
+                
+                {/* Glows */}
+                <motion.div 
+                    className="absolute top-1/4 right-1/4 w-[600px] h-[600px] rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, rgba(200,16,46,0.1) 0%, transparent 60%)' }}
+                    animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                />
+                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.03] pointer-events-none"
+                    style={{ backgroundImage: 'radial-gradient(rgba(0,0,0,0.8) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-            {/* Extended Hero Header */}
-            <div className="relative pt-32 pb-24 overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-50 dark:from-[#060911] dark:via-[#0a1225] dark:to-[#060911] transition-colors duration-300">
-                <div className="absolute inset-0">
-                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[120px] pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-                    <div className="absolute inset-0 bg-[radial-gradient(rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)]" style={{ backgroundSize: '40px 40px' }} />
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 dark:bg-white/5 border border-teal-200 dark:border-white/10 text-teal-700 dark:text-teal-400 text-xs font-bold uppercase tracking-[0.2em] mb-8 animate-fade-in-up transition-colors">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center w-full">
+                    <motion.div initial={{ opacity: 0, y: -20, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-brand-600 dark:text-brand-400 text-sm font-semibold mb-8 backdrop-blur-md transition-colors duration-300">
+                        <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
                         <Building2 className="w-4 h-4" />
                         Perfil Institucional
-                    </div>
-                    <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight animate-fade-in-up transition-colors" style={{ animationDelay: '0.1s' }}>
-                        Sobre a <span className="bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent">NovaDrive</span>
-                    </h1>
-                    <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed animate-fade-in-up transition-colors" style={{ animationDelay: '0.2s' }}>
-                        Empresa moçambicana especializada em soluções de mobilidade empresarial.
-                        Mais do que fornecer veículos, a NovaDrive posiciona-se como parceiro estratégico de mobilidade.
-                    </p>
+                    </motion.div>
+                    
+                    <motion.h1
+                        initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        className="text-5xl sm:text-7xl lg:text-8xl font-black mb-6 tracking-tight leading-[1.1] perspective-[1200px] text-slate-900 dark:text-white transition-colors duration-300"
+                    >
+                        Sobre a{' '}
+                        <span className="inline-block text-brand-500 drop-shadow-[0_0_30px_rgba(200,16,46,0.2)] dark:drop-shadow-[0_0_60px_rgba(200,16,46,0.5)]">
+                            NovaDrive
+                        </span>
+                    </motion.h1>
+                    
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        className="text-xl sm:text-2xl text-slate-600 dark:text-charcoal-300 max-w-3xl mx-auto leading-relaxed font-light transition-colors duration-300"
+                    >
+                        Empresa moçambicana especializada em soluções de mobilidade corporativa de elite.
+                        Elevamos o padrão do transporte empresarial com frota premium e gestão integral.
+                    </motion.p>
                 </div>
             </div>
 
-            {/* O Nosso Conceito */}
-            <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div className="relative group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500" />
-                        <div className="relative aspect-video rounded-3xl overflow-hidden border border-slate-200/50 dark:border-white/10 shadow-2xl">
-                            <img
-                                src="/CarTwo.webp"
-                                alt="Frota NovaDrive"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
-                            <div className="absolute bottom-6 left-6 right-6">
-                                <div className="px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 inline-block">
-                                    <span className="text-white font-bold tracking-widest text-sm uppercase">Mobilidade que move negócios</span>
+            {/* ── Conceito com Viatura 3D ──────────────────────────────────────────── */}
+            <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+                {/* Background glow for the car */}
+                <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-brand-500/5 dark:bg-brand-500/10 rounded-full blur-[100px] pointer-events-none hidden lg:block transition-colors duration-300" />
+
+                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }}
+                    variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+
+                    {/* Image / 3D Car floating */}
+                    <motion.div variants={fadeUp} className="relative h-[400px] lg:h-[500px] flex items-center justify-center">
+                        <motion.img 
+                            src={getPublicUrl('/CarThree.webp')} 
+                            alt="Conceito NovaDrive" 
+                            className="w-[120%] max-w-none object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.3)] dark:drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)] relative z-10 transition-all duration-300"
+                            animate={{ y: [-10, 10, -10] }}
+                            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                            style={{ filter: 'brightness(1.05) contrast(1.05)' }}
+                        />
+                        <div className="absolute -bottom-10 left-[20%] right-[20%] h-8 bg-black/20 dark:bg-black/60 rounded-full blur-2xl transition-colors duration-300" />
+                        
+                        {/* Floating glass card */}
+                        <motion.div 
+                            initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: 0.6, duration: 0.8 }}
+                            className="absolute bottom-4 -right-4 lg:-right-12 p-5 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-2xl z-20 transition-colors duration-300"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-brand-50 dark:bg-brand-500/20 flex items-center justify-center transition-colors duration-300">
+                                    <Award className="w-6 h-6 text-brand-500" />
+                                </div>
+                                <div>
+                                    <p className="text-slate-900 dark:text-white font-bold text-lg transition-colors duration-300">Excelência</p>
+                                    <p className="text-slate-500 dark:text-charcoal-400 text-sm transition-colors duration-300">Padrão Corporativo</p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
 
-                    <div>
-                        <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-6">O Nosso Conceito</h2>
-                        <p className="text-lg text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                            A NovaDrive foi criada com uma ideia simples: as empresas devem focar-se no seu negócio, não na gestão de viaturas.
-                        </p>
-                        <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-                            Gestão de manutenção, seguros, controlo de utilização, substituição de veículos, assistência e logística exigem tempo e recursos. A NovaDrive assume essa responsabilidade, garantindo que os clientes tenham sempre viaturas disponíveis, operacionais e bem geridas.
-                        </p>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Text Content */}
+                    <motion.div variants={stagger} className="lg:pl-8">
+                        <motion.div variants={fadeUp} className="inline-flex items-center gap-2 text-brand-500 text-sm font-bold uppercase tracking-widest mb-4">
+                            <Target className="w-4 h-4" /> O Nosso Foco
+                        </motion.div>
+                        <motion.h2 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-[1.1] transition-colors duration-300">
+                            O Nosso <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-600 dark:from-brand-400 dark:to-brand-600">Conceito</span>
+                        </motion.h2>
+                        <motion.p variants={fadeUp} className="text-xl text-slate-600 dark:text-charcoal-300 mb-6 leading-relaxed font-light transition-colors duration-300">
+                            A NovaDrive foi criada com uma ideia fundamental: <strong className="text-slate-900 dark:text-white font-medium transition-colors duration-300">as empresas devem focar-se no seu negócio, não na gestão de viaturas.</strong>
+                        </motion.p>
+                        <motion.p variants={fadeUp} className="text-lg text-slate-500 dark:text-charcoal-400 mb-10 leading-relaxed transition-colors duration-300">
+                            Gestão de manutenção, seguros, controlo de utilização e logística exigem tempo valioso. Nós assumimos essa responsabilidade inteiramente, entregando uma frota sempre pronta a operar.
+                        </motion.p>
+                        
+                        <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {[
-                                "Assumimos a responsabilidade",
-                                "Garantimos disponibilidade",
-                                "Reduzimos custos operacionais",
-                                "Foco no seu crescimento"
+                                { icon: ShieldCheck, text: 'Segurança Total' },
+                                { icon: Clock, text: 'Disponibilidade 24/7' },
+                                { icon: Car, text: 'Renovação de Frota' },
+                                { icon: Building2, text: 'Foco no Negócio' }
                             ].map((item, i) => (
-                                <div key={i} className="flex items-center gap-3">
-                                    <div className="w-6 h-6 rounded-full bg-teal-50 dark:bg-teal-500/10 flex items-center justify-center shrink-0">
-                                        <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                                    </div>
-                                    <span className="text-slate-700 dark:text-slate-300 font-medium">{item}</span>
-                                </div>
+                                <motion.div key={i} variants={fadeUp}
+                                    className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/[0.06] shadow-sm dark:shadow-none transition-colors duration-300">
+                                    <item.icon className="w-5 h-5 text-brand-500 shrink-0" />
+                                    <span className="text-sm font-medium text-slate-800 dark:text-white transition-colors duration-300">{item.text}</span>
+                                </motion.div>
                             ))}
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
+                </motion.div>
+            </section>
+
+            {/* ── Missão & Visão (Glassmorphism Cards) ─────────────────────────────────────── */}
+            <section className="py-24 relative overflow-hidden bg-white dark:bg-transparent transition-colors duration-300">
+                <div className="absolute inset-0 bg-slate-100/50 dark:bg-white/[0.02] border-y border-slate-200 dark:border-white/5 transition-colors duration-300" />
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-50px' }}
+                        variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
+                        className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                        {[
+                            {
+                                icon: Target,
+                                title: 'A Nossa Missão',
+                                text: 'Simplificar a mobilidade empresarial através de soluções profissionais de aluguer e gestão de frotas, permitindo que os clientes concentrem os seus recursos no desenvolvimento dos seus negócios.',
+                            },
+                            {
+                                icon: Eye,
+                                title: 'A Nossa Visão',
+                                text: 'Tornar-se a referência absoluta em soluções de mobilidade corporativa em Moçambique, pautando-se pela excelência operacional, segurança e inovação tecnológica.',
+                            },
+                        ].map((card, i) => (
+                            <motion.div key={i} variants={fadeUp}
+                                whileHover={{ y: -8, scale: 1.02 }}
+                                className="group relative bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 shadow-lg dark:shadow-none rounded-[2rem] p-10 sm:p-12 overflow-hidden transition-all duration-500 hover:border-brand-500/30 dark:hover:bg-white/[0.05]">
+                                {/* Card Hover Glow */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                                    style={{ background: 'radial-gradient(circle at 50% 0%, rgba(200,16,46,0.08), transparent 70%)' }} />
+                                
+                                <div className="w-16 h-16 rounded-2xl bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+                                    <card.icon className="w-8 h-8 text-brand-500" />
+                                </div>
+                                <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-4 transition-colors duration-300">{card.title}</h3>
+                                <p className="text-slate-600 dark:text-charcoal-300 leading-relaxed text-lg font-light transition-colors duration-300">{card.text}</p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
                 </div>
             </section>
 
-            {/* Missão e Visão - Cards Premium */}
-            <section className="py-24 bg-white dark:bg-[#0c0f1a] border-y border-slate-200/50 dark:border-white/5 transition-colors">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Missão */}
-                        <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-10 hover:shadow-2xl hover:shadow-teal-500/5 transition-all duration-300 group">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mb-8 shadow-lg shadow-teal-500/20 group-hover:scale-110 transition-transform">
-                                <Target className="w-8 h-8 text-white" />
-                            </div>
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">A Nossa Missão</h3>
-                            <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-                                Simplificar a mobilidade empresarial através de soluções profissionais de aluguer e gestão de frotas, permitindo que os clientes concentrem os seus recursos no desenvolvimento dos seus negócios.
-                            </p>
-                        </div>
-
-                        {/* Visão */}
-                        <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-10 hover:shadow-2xl hover:shadow-amber-500/5 transition-all duration-300 group">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-8 shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
-                                <Eye className="w-8 h-8 text-white" />
-                            </div>
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">A Nossa Visão</h3>
-                            <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-                                Tornar-se uma referência em soluções de mobilidade empresarial em Moçambique, oferecendo serviços confiáveis, eficientes e adaptados às necessidades do mercado.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            {/* ── Diferencial ─────────────────────────────────────── */}
+            <section className="py-32 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-brand-500/5 dark:bg-brand-500/10 rounded-[100%] blur-[120px] pointer-events-none transition-colors duration-300" />
+                
+                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="relative z-10">
+                    <motion.div variants={fadeUp} className="inline-block mb-8">
+                        <Quote className="w-16 h-16 text-brand-500/20 dark:text-brand-500/30 transition-colors duration-300" />
+                    </motion.div>
+                    <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl md:text-5xl font-light text-slate-800 dark:text-white mb-10 leading-[1.4] transition-colors duration-300">
+                        "O grande <span className="font-bold text-brand-500">diferencial da NovaDrive</span> é a abordagem de parceria de mobilidade. Em vez de apenas alugar veículos, oferecemos uma solução integrada que elimina a complexidade."
+                    </motion.h2>
+                    <motion.div variants={fadeUp} className="w-24 h-1 bg-brand-500 mx-auto rounded-full" />
+                </motion.div>
             </section>
 
-            {/* Diferencial Estratégico */}
-            <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-teal-600 dark:text-teal-400 mb-8 shadow-sm">
-                    <ShieldCheck className="w-10 h-10" />
-                </div>
-                <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-6">O Diferencial NovaDrive</h2>
-                <div className="max-w-4xl mx-auto bg-gradient-to-r from-slate-100 to-slate-50 dark:from-white/5 dark:to-transparent border border-slate-200 dark:border-white/10 rounded-3xl p-10 backdrop-blur-xl">
-                    <p className="text-xl sm:text-2xl text-slate-700 dark:text-slate-300 font-medium leading-relaxed italic">
-                        "O grande diferencial da NovaDrive é a abordagem de parceria de mobilidade. Em vez de apenas alugar veículos, oferecemos uma solução integrada que permite aos clientes eliminar a complexidade da gestão de viaturas, mantendo sempre a mobilidade eficiente para as suas operações."
-                    </p>
-                </div>
-            </section>
-
-            {/* CTA Final */}
-            <section className="pb-24">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-gradient-to-br from-teal-600 to-cyan-600 rounded-3xl p-12 text-center shadow-2xl shadow-teal-500/30 border border-teal-400/50 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                        <h2 className="relative z-10 text-3xl font-black text-white mb-6">Pronto para otimizar a sua mobilidade?</h2>
-                        <p className="relative z-10 text-teal-100 text-lg mb-8 max-w-2xl mx-auto">
-                            Consulte a nossa frota ou fale connosco para uma solução desenhada à medida da sua organização.
+            {/* ── CTA Final ───────────────────────────────────────── */}
+            <section className="pb-32 px-4 sm:px-6 lg:px-8">
+                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+                    className="max-w-6xl mx-auto relative overflow-hidden rounded-[3rem] border border-slate-200 dark:border-white/10 shadow-2xl dark:shadow-none transition-colors duration-300">
+                    
+                    {/* Background CTA */}
+                    <div className="absolute inset-0 bg-white dark:bg-gradient-to-br dark:from-[#121215] dark:to-[#1a1214] transition-colors duration-300" />
+                    <div className="absolute inset-0 bg-cover bg-center opacity-5 dark:opacity-10 mix-blend-luminosity" style={{ backgroundImage: `url(${getPublicUrl('/hero-fleet.png')})` }} />
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/10 dark:bg-brand-500/20 rounded-full blur-[100px] pointer-events-none transition-colors duration-300" />
+                    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-500/5 dark:bg-brand-500/10 rounded-full blur-[80px] pointer-events-none transition-colors duration-300" />
+                    
+                    <div className="relative p-12 sm:p-20 text-center z-10">
+                        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight transition-colors duration-300">Eleve a sua <span className="text-brand-500">Mobilidade</span></h2>
+                        <p className="text-slate-600 dark:text-charcoal-300 text-xl mb-12 max-w-2xl mx-auto font-light leading-relaxed transition-colors duration-300">
+                            Descubra como a NovaDrive pode transformar a operação da sua empresa com frota de excelência e gestão de ponta.
                         </p>
-                        <div className="relative z-10 flex flex-col sm:flex-row justify-center gap-4">
-                            <Link to="/vehicles" className="px-8 py-4 bg-white text-teal-700 font-bold rounded-2xl hover:bg-slate-50 transition-colors shadow-lg">
-                                Explorar Viaturas
-                            </Link>
-                            <a href="mailto:info@novadrive.co.mz" className="px-8 py-4 bg-teal-700/50 border border-teal-400 text-white font-bold rounded-2xl hover:bg-teal-700/80 transition-colors backdrop-blur-sm">
-                                Falar com Consultor
+                        <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+                            <MagneticButton href="/vehicles">
+                                Conhecer a Frota <ArrowRight className="w-5 h-5 ml-1" />
+                            </MagneticButton>
+                            <a href="mailto:info@novadrive.co.mz"
+                                className="inline-flex items-center justify-center px-9 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-bold text-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors backdrop-blur-sm shadow-sm dark:shadow-none">
+                                Contactar Consultor
                             </a>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </section>
         </div>
     );

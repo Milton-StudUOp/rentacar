@@ -1,41 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================
+   PREMIUM PERSPECTIVE & 3D
+   ======================================== */
+.perspective-\[1200px\] {
+  perspective: 1200px;
+}
+
+/* Ensure GPU acceleration on animated elements */
+.transform-gpu {
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
 :root {
-  --primary: #0f766e;
-  --primary-light: #14b8a6;
-  --primary-dark: #0d9488;
-  --accent: #f59e0b;
-  --accent-light: #fbbf24;
+  /* NovaDrive Corporate Palette */
+  --brand-primary: #C8102E;
+  --brand-primary-light: #e63946;
+  --brand-primary-dark: #a80d26;
+  --brand-accent: #D4AF37; /* Gold accent for premium feel */
+  --brand-charcoal: #1C1C1E;
+  --brand-snow: #FAFAFA;
+
+  /* Functional Colors */
   --danger: #ef4444;
   --success: #22c55e;
   --warning: #f59e0b;
-  --gradient-start: #0f766e;
-  --gradient-end: #0ea5e9;
 
-  /* Light Theme Defaults */
-  --bg-main: #f8fafc;
+  /* Light Theme */
+  --bg-main: #FAFAFA;
   --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
-  --bg-navbar: rgba(255, 255, 255, 0.85);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --border-color: #e2e8f0;
+  --bg-card-hover: #f5f5f6;
+  --bg-navbar: rgba(255, 255, 255, 0.90);
+  --text-primary: #1C1C1E;
+  --text-secondary: #616165;
+  --text-muted: #a8a8ab;
+  --border-color: #e5e5e7;
+  --border-subtle: rgba(0, 0, 0, 0.06);
 }
 
 .dark {
-  /* Dark Theme Overrides */
   color-scheme: dark;
-  --bg-main: #0c0f1a;
-  --bg-card: #1a1d2e;
-  --bg-card-hover: #242840;
-  --bg-navbar: rgba(12, 15, 26, 0.85);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.05);
+  --bg-main: #121214;
+  --bg-card: #1C1C1E;
+  --bg-card-hover: #2a2a2e;
+  --bg-navbar: rgba(18, 18, 20, 0.90);
+  --text-primary: #FAFAFA;
+  --text-secondary: #a8a8ab;
+  --text-muted: #7c7c80;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.04);
 }
 
 * {
@@ -52,9 +71,14 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
 }
 
-/* Custom scrollbar */
+/* ========================================
+   CUSTOM SCROLLBAR — Corporate Red
+   ======================================== */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -64,32 +88,107 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary);
+  background: var(--brand-primary);
   border-radius: 3px;
 }
 
-/* Glass effect */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-primary-dark);
+}
+
+/* ========================================
+   GLASS EFFECT — Premium Glassmorphism
+   ======================================== */
 .glass {
-  background: rgba(26, 29, 46, 0.8);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dark .glass-light {
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Gradient text */
+/* ========================================
+   GRADIENT TEXT — Corporate
+   ======================================== */
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary-light), var(--gradient-end));
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Animations */
+.gradient-text-gold {
+  background: linear-gradient(135deg, #D4AF37, #F5D76E);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   GLOW EFFECTS — CTA Buttons
+   ======================================== */
+.glow-red {
+  box-shadow: 0 0 20px rgba(200, 16, 46, 0.3),
+              0 0 60px rgba(200, 16, 46, 0.1);
+  transition: box-shadow 0.4s ease;
+}
+
+.glow-red:hover {
+  box-shadow: 0 0 30px rgba(200, 16, 46, 0.5),
+              0 0 80px rgba(200, 16, 46, 0.2);
+}
+
+/* ========================================
+   CARD STYLES — Premium
+   ======================================== */
+.card-corporate {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-corporate:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  border-color: rgba(200, 16, 46, 0.2);
+}
+
+.dark .card-corporate:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   SECTION INVERTED (Tech/Security)
+   ======================================== */
+.section-inverted {
+  background: linear-gradient(160deg, #060608 0%, #0d060a 50%, #060608 100%);
+  color: #FAFAFA;
+}
+
+.dark .section-inverted {
+  background: linear-gradient(160deg, #040405 0%, #080408 50%, #040405 100%);
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -97,13 +196,8 @@ body {
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .animate-fade-in-up {
@@ -116,35 +210,37 @@ body {
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-/* Select option styling for dark theme */
+/* ========================================
+   SELECT / FORM ELEMENTS
+   ======================================== */
 select option {
-  background-color: #1a1d2e;
+  background-color: #1C1C1E;
   color: #f1f5f9;
 }
 
-/* Flatpickr Custom Premium Theme */
+/* ========================================
+   FLATPICKR CUSTOM — Corporate Red Theme
+   ======================================== */
 .flatpickr-calendar {
   background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid #e5e5e7 !important;
   border-radius: 12px !important;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
-  color: #1e293b !important;
+  color: #1C1C1E !important;
   padding: 5px !important;
   z-index: 9999 !important;
-  /* Fix for admin dashboard cards overlap */
 }
 
 html.dark .flatpickr-calendar {
-  background: #0f172a !important;
-  border: 1px solid #1e293b !important;
+  background: #1C1C1E !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-  color: #f1f5f9 !important;
+  color: #FAFAFA !important;
 }
 
 /* Calendar Header */
 .flatpickr-months {
-  background: #f8fafc !important;
-  /* Subtle contrast for light mode */
+  background: #f5f5f6 !important;
   border-radius: 8px;
   margin-bottom: 4px;
 }
@@ -155,8 +251,8 @@ html.dark .flatpickr-months {
 
 .flatpickr-month {
   background: transparent !important;
-  color: #1e293b !important;
-  fill: #1e293b !important;
+  color: #1C1C1E !important;
+  fill: #1C1C1E !important;
 }
 
 .flatpickr-current-month {
@@ -181,8 +277,8 @@ html.dark .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
 }
 
 html.dark .flatpickr-month {
-  color: #f1f5f9 !important;
-  fill: #f1f5f9 !important;
+  color: #FAFAFA !important;
+  fill: #FAFAFA !important;
 }
 
 .flatpickr-current-month .numInputWrapper {
@@ -209,110 +305,108 @@ html.dark .flatpickr-current-month .numInputWrapper:hover {
 
 .flatpickr-weekday {
   background: transparent !important;
-  color: #64748b !important;
+  color: #7c7c80 !important;
   font-weight: 600 !important;
 }
 
 html.dark .flatpickr-weekday {
-  color: #94a3b8 !important;
+  color: #a8a8ab !important;
 }
 
 /* Days */
 .flatpickr-day {
-  color: #1e293b !important;
+  color: #1C1C1E !important;
   border-radius: 8px !important;
   margin: 2px !important;
 }
 
 html.dark .flatpickr-day {
-  color: #f1f5f9 !important;
+  color: #FAFAFA !important;
 }
 
 .flatpickr-day:hover,
 .flatpickr-day:focus {
-  background: #f1f5f9 !important;
+  background: #f5f5f6 !important;
   border-color: transparent !important;
 }
 
 html.dark .flatpickr-day:hover,
 html.dark .flatpickr-day:focus {
-  background: #1e293b !important;
+  background: #2a2a2e !important;
   border-color: transparent !important;
 }
 
 .flatpickr-day.selected {
-  background: #0d9488 !important;
-  /* teal-600 */
-  border-color: #0d9488 !important;
+  background: #C8102E !important;
+  border-color: #C8102E !important;
   color: #ffffff !important;
   font-weight: 700 !important;
 }
 
 /* Time Picker Section */
 .flatpickr-time {
-  border-top: 1px solid #e2e8f0 !important;
+  border-top: 1px solid #e5e5e7 !important;
   max-height: 50px !important;
 }
 
 html.dark .flatpickr-time {
-  border-top: 1px solid #1e293b !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 .flatpickr-time input,
 .flatpickr-time .numInputWrapper {
-  color: #1e293b !important;
+  color: #1C1C1E !important;
   background: transparent !important;
 }
 
 html.dark .flatpickr-time input,
 html.dark .flatpickr-time .numInputWrapper {
-  color: #f1f5f9 !important;
+  color: #FAFAFA !important;
   background: transparent !important;
 }
 
-/* THIS FIXES THE GREY BOX ON TIME HOVER/FOCUS */
 .flatpickr-time input:hover,
 .flatpickr-time input:focus,
 .flatpickr-time .numInputWrapper:hover,
 .flatpickr-time .numInputWrapper:focus {
-  background: #f1f5f9 !important;
-  color: #1e293b !important;
+  background: #f5f5f6 !important;
+  color: #1C1C1E !important;
 }
 
 html.dark .flatpickr-time input:hover,
 html.dark .flatpickr-time input:focus,
 html.dark .flatpickr-time .numInputWrapper:hover,
 html.dark .flatpickr-time .numInputWrapper:focus {
-  background: #1e293b !important;
-  color: #f1f5f9 !important;
+  background: #2a2a2e !important;
+  color: #FAFAFA !important;
 }
 
 /* AM/PM toggle */
 .flatpickr-am-pm {
-  color: #1e293b !important;
+  color: #1C1C1E !important;
 }
 
 html.dark .flatpickr-am-pm {
-  color: #f1f5f9 !important;
+  color: #FAFAFA !important;
 }
 
 .flatpickr-am-pm:hover,
 .flatpickr-am-pm:focus {
-  background: #f1f5f9 !important;
+  background: #f5f5f6 !important;
 }
 
 html.dark .flatpickr-am-pm:hover,
 html.dark .flatpickr-am-pm:focus {
-  background: #1e293b !important;
+  background: #2a2a2e !important;
 }
 
 /* Fix arrows */
 .numInputWrapper span.arrowUp:after {
-  border-bottom-color: #94a3b8 !important;
+  border-bottom-color: #a8a8ab !important;
 }
 
 .numInputWrapper span.arrowDown:after {
-  border-top-color: #94a3b8 !important;
+  border-top-color: #a8a8ab !important;
 }
 
 /* Fix Native Time Inputs (Chrome/Edge/Safari) */
@@ -335,7 +429,7 @@ input[type="time"]::-webkit-datetime-edit-ampm-field {
 input[type="time"]::-webkit-datetime-edit-hour-field:focus,
 input[type="time"]::-webkit-datetime-edit-minute-field:focus,
 input[type="time"]::-webkit-datetime-edit-ampm-field:focus {
-  background-color: var(--primary) !important;
+  background-color: var(--brand-primary) !important;
   color: white !important;
   border-radius: 4px;
 }

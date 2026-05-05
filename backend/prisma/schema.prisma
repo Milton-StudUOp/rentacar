@@ -12,11 +12,6 @@ enum Role {
   CLIENT
 }
 
-enum BookingType {
-  VEHICLE
-  TRANSFER
-}
-
 enum BookingStatus {
   PENDING
   CONFIRMED
@@ -66,13 +61,14 @@ model Vehicle {
   brand        String   @db.VarChar(100)
   model        String   @db.VarChar(100)
   year         Int
-  category     String   @db.VarChar(50)
+  category     String   @db.VarChar(50)  // "Van / Minibus Standard" or "Minibus de Médio Porte"
   transmission String   @db.VarChar(20)
   fuelType     String   @db.VarChar(20)
   seats        Int
   pricePerDay  Decimal  @db.Decimal(10, 2)
   description  String?  @db.Text
   features     String?  @db.Text
+  idealFor     String?  @db.VarChar(255) // e.g., "Rotas urbanas, executivos"
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -120,36 +116,10 @@ model VehicleAvailability {
   @@map("vehicle_availability")
 }
 
-model TransferService {
-  id          Int               @id @default(autoincrement())
-  name        String            @db.VarChar(255)
-  description String?           @db.Text
-  vehicleType String            @db.VarChar(100)
-  capacity    Int
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  images      TransferServiceImage[]
-  bookings    TransferBooking[]
-
-  @@map("transfer_services")
-}
-
-model TransferServiceImage {
-  id        Int             @id @default(autoincrement())
-  serviceId Int
-  url       String          @db.VarChar(400)
-  isPrimary Boolean         @default(false)
-  createdAt DateTime        @default(now())
-  service   TransferService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-
-  @@map("transfer_service_images")
-}
-
 model Booking {
   id             Int           @id @default(autoincrement())
   userId         Int
-  type           BookingType
+  type           String        @default("VEHICLE") @db.VarChar(20)
   status         BookingStatus @default(PENDING)
   totalPrice     Decimal       @db.Decimal(10, 2)
   notes          String?       @db.Text
@@ -161,7 +131,6 @@ model Booking {
   user           User          @relation(fields: [userId], references: [id])
 
   vehicleBooking  VehicleBooking?
-  transferBooking TransferBooking?
   payment         Payment?
 
   @@map("bookings")
@@ -177,24 +146,6 @@ model VehicleBooking {
   vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
 
   @@map("vehicle_bookings")
-}
-
-model TransferBooking {
-  id          Int             @id @default(autoincrement())
-  bookingId   Int             @unique
-  serviceId   Int
-  origin      String          @db.VarChar(255)
-  destination String          @db.VarChar(255)
-  travelDate  DateTime        @db.Date
-  travelTime  String          @db.VarChar(5)
-  passengers  Int
-  isRoundTrip Boolean         @default(false)
-  returnDate  DateTime?       @db.Date
-  returnTime  String?         @db.VarChar(5)
-  booking     Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  service     TransferService @relation(fields: [serviceId], references: [id])
-
-  @@map("transfer_bookings")
 }
 
 model Payment {

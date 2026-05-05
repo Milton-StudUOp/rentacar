@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, useMotionValue, useSpring, animate } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValue, useSpring, animate, AnimatePresence } from 'framer-motion';
 import { Bus, ArrowRight, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
@@ -90,58 +90,60 @@ function MagneticButton({ children, href }: { children: React.ReactNode; href: s
     );
 }
 
-/* ── Infinite car marquee ─────────────────────────────── */
+/* ── Single-car drive-by slideshow ─────────────────────── */
 const carImages = ['/CarOne.webp', '/CarTwo.webp', '/CarThree.webp', '/CarFour.webp'];
 
-function CarMarquee() {
-    // Duplicate the array 3× for seamless infinite loop
-    const allCars = [...carImages, ...carImages, ...carImages];
+function CarSlideshow() {
+    const [currentCar, setCurrentCar] = useState(0);
+
+    useEffect(() => {
+        // Each car takes ~4s to cross, then wait 0.8s before next
+        const interval = setInterval(() => {
+            setCurrentCar(prev => (prev + 1) % carImages.length);
+        }, 4800);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
-        <div className="relative w-full overflow-hidden py-4">
-            {/* Fade edges */}
-            <div className="absolute left-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-r from-[#0a0a0c] to-transparent pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-l from-[#0a0a0c] to-transparent pointer-events-none" />
+        <div className="relative w-full overflow-hidden h-36 sm:h-44 md:h-52">
+            {/* Road surface line */}
+            <div className="absolute bottom-4 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-            {/* Road line */}
-            <div className="absolute bottom-3 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <div className="absolute bottom-3 left-0 right-0 h-px">
+            {/* Animated dashed road markings */}
+            <div className="absolute bottom-4 left-0 right-0 h-px overflow-hidden">
                 <motion.div
-                    className="h-full w-full"
+                    className="h-full w-[200%]"
                     style={{
-                        backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0px, rgba(255,255,255,0.25) 30px, transparent 30px, transparent 60px)',
-                        backgroundSize: '60px 100%',
+                        backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.3) 30px, transparent 30px, transparent 60px)',
                     }}
-                    animate={{ backgroundPositionX: [0, -60] }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    animate={{ x: ['0%', '-50%'] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                 />
             </div>
 
-            {/* Scrolling cars – moving right to left like driving */}
-            <motion.div
-                className="flex items-end gap-24 will-change-transform"
-                animate={{ x: ['0%', '-33.33%'] }}
-                transition={{
-                    x: {
-                        duration: 20,
-                        repeat: Infinity,
+            {/* Single car at a time, entering right → exiting left */}
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={currentCar}
+                    className="absolute bottom-5 flex items-end justify-center"
+                    initial={{ x: '110vw' }}
+                    animate={{ x: '-40vw' }}
+                    exit={{ x: '-110vw' }}
+                    transition={{
+                        duration: 4,
                         ease: 'linear',
-                    },
-                }}
-            >
-                {allCars.map((src, i) => (
-                    <div key={i} className="flex-shrink-0 relative group">
-                        {/* Shadow underneath car */}
-                        <div className="absolute -bottom-1 left-[10%] right-[10%] h-4 bg-brand-500/15 rounded-full blur-xl" />
-                        <img
-                            src={src}
-                            alt="NovaDrive vehicle"
-                            className="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)] group-hover:scale-105 transition-transform duration-500"
-                            style={{ filter: 'brightness(1.05) contrast(1.05)' }}
-                        />
-                    </div>
-                ))}
-            </motion.div>
+                    }}
+                >
+                    {/* Shadow underneath car */}
+                    <div className="absolute -bottom-2 left-[15%] right-[15%] h-5 bg-black/40 rounded-full blur-xl" />
+                    <img
+                        src={carImages[currentCar]}
+                        alt="NovaDrive vehicle"
+                        className="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]"
+                        style={{ filter: 'brightness(1.1) contrast(1.05)' }}
+                    />
+                </motion.div>
+            </AnimatePresence>
         </div>
     );
 }
@@ -199,83 +201,85 @@ export default function HeroSection() {
                 style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
             />
 
-            {/* — Content — */}
+            {/* — Content: two-column layout — */}
             <motion.div
                 style={{ opacity: opacityContent }}
                 className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-24 pb-8 transform-gpu"
             >
-                {/* Badge */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as any }}
-                    className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-brand-400 text-sm font-semibold mb-10 backdrop-blur-md"
-                >
-                    <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
-                    <Bus className="w-4 h-4" />
-                    Moçambique · Mobilidade Corporativa de Elite
-                </motion.div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
 
-                {/* Headline */}
-                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-black leading-[1.0] text-white mb-8 perspective-[1200px]">
-                    <AnimatedTitle>Soluções de</AnimatedTitle>{' '}
-                    <motion.span
-                        className="inline-block text-brand-500"
-                        initial={{ opacity: 0, y: 60 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, delay: 0.65, ease: [0.16, 1, 0.3, 1] as any }}
-                        style={{ textShadow: '0 0 60px rgba(200,16,46,0.5)' }}
+                    {/* Left column: text content */}
+                    <div>
+                        {/* Badge */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as any }}
+                            className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-brand-400 text-sm font-semibold mb-10 backdrop-blur-md"
+                        >
+                            <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
+                            <Bus className="w-4 h-4" />
+                            Moçambique · Mobilidade Corporativa de Elite
+                        </motion.div>
+
+                        {/* Headline */}
+                        <h1 className="text-5xl sm:text-7xl lg:text-7xl xl:text-8xl font-heading font-black leading-[1.0] text-white mb-8 perspective-[1200px]">
+                            <AnimatedTitle>Soluções de</AnimatedTitle>{' '}
+                            <motion.span
+                                className="inline-block text-brand-500"
+                                initial={{ opacity: 0, y: 60 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.7, delay: 0.65, ease: [0.16, 1, 0.3, 1] as any }}
+                                style={{ textShadow: '0 0 60px rgba(200,16,46,0.5)' }}
+                            >
+                                Mobilidade
+                            </motion.span>
+                            <br />
+                            <AnimatedTitle>Empresarial</AnimatedTitle>
+                        </h1>
+
+                        {/* Subtext */}
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.7, delay: 0.9 }}
+                            className="text-xl sm:text-2xl text-charcoal-300 mb-12 max-w-xl leading-relaxed font-light"
+                        >
+                            Não fornecemos apenas viaturas. Estruturamos, operamos e controlamos um sistema completo de transporte para a sua organização.
+                        </motion.p>
+
+                        {/* CTA Row */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.7, delay: 1.1 }}
+                            className="flex flex-wrap gap-4"
+                        >
+                            <MagneticButton href="#contacto">
+                                Pedir Proposta Comercial
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
+                            </MagneticButton>
+
+                            <motion.a
+                                href="#frota"
+                                whileHover={{ scale: 1.03, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-white/5 border border-white/15 text-white font-semibold text-lg backdrop-blur-sm cursor-pointer"
+                            >
+                                Ver Frota
+                            </motion.a>
+                        </motion.div>
+                    </div>
+
+                    {/* Right column: car drive-by */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1, delay: 1.2 }}
+                        className="hidden lg:block relative"
                     >
-                        Mobilidade
-                    </motion.span>
-                    <br />
-                    <AnimatedTitle>Empresarial</AnimatedTitle>
-                </h1>
-
-                {/* Subtext */}
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.9 }}
-                    className="text-xl sm:text-2xl text-charcoal-300 mb-12 max-w-2xl leading-relaxed font-light"
-                >
-                    Não fornecemos apenas viaturas. Estruturamos, operamos e controlamos um sistema completo de transporte para a sua organização.
-                </motion.p>
-
-                {/* CTA Row */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 1.1 }}
-                    className="flex flex-wrap gap-4 mb-16"
-                >
-                    <MagneticButton href="#contacto">
-                        Pedir Proposta Comercial
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
-                    </MagneticButton>
-
-                    <motion.a
-                        href="#frota"
-                        whileHover={{ scale: 1.03, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                        className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-white/5 border border-white/15 text-white font-semibold text-lg backdrop-blur-sm cursor-pointer"
-                    >
-                        Ver Frota
-                    </motion.a>
-                </motion.div>
-            </motion.div>
-
-            {/* — Car marquee (between CTA and KPIs) — */}
-            <motion.div
-                style={{ opacity: opacityContent }}
-                className="relative z-10 w-full transform-gpu"
-            >
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1, delay: 1.5 }}
-                >
-                    <CarMarquee />
-                </motion.div>
+                        <CarSlideshow />
+                    </motion.div>
+                </div>
             </motion.div>
 
             {/* — KPIs — */}

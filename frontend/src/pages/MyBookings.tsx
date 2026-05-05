@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Navigate, Link } from 'react-router-dom';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
-import { Car, ArrowLeftRight, Calendar, Clock, XCircle, Loader2, CheckCircle2, Truck, RotateCcw, Star, MessageSquare, Search, UploadCloud, FileText } from 'lucide-react';
+import { Car, Calendar, XCircle, Loader2, CheckCircle2, Truck, RotateCcw, Star, MessageSquare, Search, UploadCloud, FileText } from 'lucide-react';
 import { formatPrice } from '../lib/utils';
 
 const statusMap: Record<string, { label: string; color: string }> = {
@@ -19,7 +19,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 
 interface Booking {
     id: number;
-    type: 'VEHICLE' | 'TRANSFER';
+    type: 'VEHICLE';
     status: string;
     totalPrice: number;
     notes?: string;
@@ -35,15 +35,7 @@ interface Booking {
             images: { url: string }[];
         };
     };
-    transferBooking?: {
-        origin: string;
-        destination: string;
-        travelDate: string;
-        travelTime: string;
-        isRoundTrip: boolean;
-        returnDate?: string;
-        returnTime?: string;
-    };
+
     payment?: {
         reference?: string;
     };
@@ -77,8 +69,7 @@ export default function MyBookings() {
             displayedBookings = displayedBookings.filter((b: Booking) => {
                 const model = b.vehicleBooking?.vehicle?.model?.toLowerCase() || '';
                 const brand = b.vehicleBooking?.vehicle?.brand?.toLowerCase() || '';
-                const route = `${b.transferBooking?.origin || ''} ${b.transferBooking?.destination || ''}`.toLowerCase();
-                return model.includes(term) || brand.includes(term) || route.includes(term) || String(b.id) === term;
+                return model.includes(term) || brand.includes(term) || String(b.id) === term;
             });
         }
     }
@@ -143,21 +134,20 @@ export default function MyBookings() {
     if (!isAuthenticated) return <Navigate to="/" />;
 
     return (
-        <div className="min-h-screen py-8 transition-colors duration-300">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-bold mb-8 text-slate-900 dark:text-white transition-colors">Minhas Reservas</h1>
+        <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-300 pt-24 pb-16">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="mb-8">
+                    <h1 className="text-4xl font-black text-gray-900 dark:text-white">Minhas Reservas</h1>
+                    <p className="text-gray-500 dark:text-zinc-400 mt-1">Acompanhe e gira todas as suas reservas</p>
+                </div>
 
-                <div className="flex gap-8 mb-8 border-b border-slate-200 dark:border-slate-800 transition-colors">
-                    <button
-                        onClick={() => setActiveTab('active')}
-                        className={`pb-4 px-2 text-sm font-medium transition-colors border-b-2 ${activeTab === 'active' ? 'border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}
-                    >
+                <div className="flex gap-1 mb-8 p-1 bg-gray-100 dark:bg-zinc-800 rounded-xl w-fit">
+                    <button onClick={() => setActiveTab('active')}
+                        className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'active' ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200'}`}>
                         Reservas Activas
                     </button>
-                    <button
-                        onClick={() => setActiveTab('history')}
-                        className={`pb-4 px-2 text-sm font-medium transition-colors border-b-2 ${activeTab === 'history' ? 'border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}
-                    >
+                    <button onClick={() => setActiveTab('history')}
+                        className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'history' ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200'}`}>
                         Histórico
                     </button>
                 </div>
@@ -170,7 +160,7 @@ export default function MyBookings() {
                             placeholder="Pesquisar histórico por viatura, datas ou código..."
                             value={historySearch}
                             onChange={e => setHistorySearch(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-12 pr-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                            className="w-full bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl pl-12 pr-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all"
                         />
                     </div>
                 )}
@@ -202,20 +192,17 @@ export default function MyBookings() {
                     <div className="space-y-4">
                         {displayedBookings.map((b: Booking) => {
                             const status = statusMap[b.status] || statusMap.PENDING;
-                            const isVehicle = b.type === 'VEHICLE';
                             return (
-                                <div key={b.id} className="bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md rounded-2xl p-6 shadow-md hover:shadow-xl dark:shadow-none transition-all">
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                        <div className="flex items-start gap-4">
-                                            {isVehicle && b.vehicleBooking?.vehicle?.images?.[0]?.url ? (
+                                <div key={b.id} className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/6 rounded-2xl p-6 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/8 hover:border-brand-500/20 transition-all duration-300 group">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div className="flex items-start gap-4 flex-1">
+                                            {b.vehicleBooking?.vehicle?.images?.[0]?.url ? (
                                                 <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 ring-1 ring-slate-200 dark:ring-white/10 transition-colors">
                                                     <img src={b.vehicleBooking.vehicle.images[0].url} alt={b.vehicleBooking.vehicle.model} className="w-full h-full object-cover" />
                                                 </div>
                                             ) : (
                                                 <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center shrink-0 transition-colors">
-                                                    {isVehicle
-                                                        ? <Car className="w-6 h-6 text-slate-400 dark:text-slate-500" />
-                                                        : <ArrowLeftRight className="w-6 h-6 text-slate-400 dark:text-slate-500" />}
+                                                    <Car className="w-6 h-6 text-slate-400 dark:text-slate-500" />
                                                 </div>
                                             )}
                                             <div>
@@ -225,60 +212,23 @@ export default function MyBookings() {
                                                     </span>
                                                     <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 transition-colors">#{b.id}</span>
                                                 </div>
-                                                {isVehicle ? (
-                                                    <>
-                                                        <h3 className="font-semibold text-slate-900 dark:text-white transition-colors">
-                                                            {b.vehicleBooking?.vehicle?.brand} {b.vehicleBooking?.vehicle?.model}
-                                                        </h3>
-                                                        <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1 transition-colors">
-                                                            <Calendar className="w-3 h-3" />
-                                                            {new Date(b.vehicleBooking?.startDate || '').toLocaleDateString('pt-MZ')} —{' '}
-                                                            {new Date(b.vehicleBooking?.endDate || '').toLocaleDateString('pt-MZ')}
-                                                        </p>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <div className="flex items-center gap-2">
-                                                            <h3 className="font-semibold text-slate-900 dark:text-white transition-colors">
-                                                                {b.transferBooking?.origin} → {b.transferBooking?.destination}
-                                                            </h3>
-                                                            {b.transferBooking?.isRoundTrip && (
-                                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-50 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 tracking-wider uppercase border border-cyan-200 dark:border-cyan-500/30 transition-colors">Ida e Volta</span>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex flex-col gap-1 mt-2 lg:flex-row lg:items-center lg:gap-3 transition-colors">
-                                                            <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 transition-colors">
-                                                                <span className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-widest w-8 transition-colors">Ida:</span>
-                                                                <Calendar className="w-3.5 h-3.5 -mt-0.5" />
-                                                                {new Date(b.transferBooking?.travelDate || '').toLocaleDateString('pt-MZ')}
-                                                                <Clock className="w-3.5 h-3.5 ml-1 -mt-0.5" />
-                                                                {b.transferBooking?.travelTime}
-                                                            </p>
-                                                            {b.transferBooking?.isRoundTrip && b.transferBooking?.returnDate && (
-                                                                <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 transition-colors">
-                                                                    <span className="hidden lg:inline text-slate-300 dark:text-slate-600 transition-colors">|</span>
-                                                                    <span className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest w-12 lg:w-auto transition-colors">Volta:</span>
-                                                                    <Calendar className="w-3.5 h-3.5 -mt-0.5" />
-                                                                    {new Date(b.transferBooking.returnDate).toLocaleDateString('pt-MZ')}
-                                                                    <Clock className="w-3.5 h-3.5 ml-1 -mt-0.5" />
-                                                                    {b.transferBooking.returnTime}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    </>
-                                                )}
+                                                <h3 className="font-semibold text-slate-900 dark:text-white transition-colors">
+                                                    {b.vehicleBooking?.vehicle?.brand} {b.vehicleBooking?.vehicle?.model}
+                                                </h3>
+                                                <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1 transition-colors">
+                                                    <Calendar className="w-3 h-3" />
+                                                    {new Date(b.vehicleBooking?.startDate || '').toLocaleDateString('pt-MZ')} —{' '}
+                                                    {new Date(b.vehicleBooking?.endDate || '').toLocaleDateString('pt-MZ')}
+                                                </p>
                                             </div>
                                         </div>
 
                                         <div className="flex items-center gap-3">
                                             <div className="text-right">
-                                                <div className="text-xl font-bold text-teal-600 dark:text-teal-400 transition-colors">
-                                                    {b.type === 'TRANSFER' && b.totalPrice === 0 ? (
-                                                        <span className="text-amber-500 dark:text-amber-400 italic text-base transition-colors">A definir</span>
-                                                    ) : (
-                                                        `${formatPrice(b.totalPrice)} MT`
-                                                    )}
-                                                </div>
+                                                <p className="text-xs text-gray-500 dark:text-zinc-400 font-semibold uppercase tracking-wider mb-1">Total</p>
+                                                <p className="text-2xl font-black text-brand-500">
+                                                    {`${formatPrice(b.totalPrice)} MT`}
+                                                </p>
                                             </div>
 
                                             {(b.status === 'PENDING' || b.status === 'CONFIRMED') && (

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { BookingStatus, BookingType, AvailabilityStatus } from '@prisma/client';
+import { BookingStatus, AvailabilityStatus } from '@prisma/client';
 
 @Injectable()
 export class BookingsService {
@@ -50,7 +50,7 @@ export class BookingsService {
         const booking = await this.prisma.booking.create({
             data: {
                 userId,
-                type: BookingType.VEHICLE,
+                type: 'VEHICLE',
                 totalPrice,
                 notes: data.notes,
                 vehicleBooking: {
@@ -76,66 +76,11 @@ export class BookingsService {
         return booking;
     }
 
-    async createTransferBooking(userId: number, data: {
-        serviceId: number;
-        origin: string;
-        destination: string;
-        travelDate: string;
-        travelTime: string;
-        passengers: number;
-        isRoundTrip?: boolean;
-        returnDate?: string;
-        returnTime?: string;
-        notes?: string;
-    }) {
-        const service = await this.prisma.transferService.findUnique({
-            where: { id: data.serviceId },
-        });
-        if (!service) throw new NotFoundException('Serviço de transfer não encontrado');
 
-        if (data.passengers > service.capacity) {
-            throw new BadRequestException(`Capacidade máxima: ${service.capacity} passageiros`);
-        }
-
-        const booking = await this.prisma.booking.create({
-            data: {
-                userId,
-                type: BookingType.TRANSFER,
-                totalPrice: 0, // Price is defined later by admin
-                notes: data.notes,
-                transferBooking: {
-                    create: {
-                        serviceId: data.serviceId,
-                        origin: data.origin,
-                        destination: data.destination,
-                        travelDate: new Date(data.travelDate),
-                        travelTime: data.travelTime,
-                        passengers: data.passengers,
-                        isRoundTrip: data.isRoundTrip || false,
-                        returnDate: data.returnDate ? new Date(data.returnDate) : null,
-                        returnTime: data.returnTime || null,
-                    },
-                },
-            },
-            include: {
-                transferBooking: { include: { service: true } },
-                user: { select: { id: true, name: true, email: true, phone: true } },
-            },
-        }) as any;
-
-        await this.notifications.createNotification(
-            'Nova Reserva de Transfer',
-            `O cliente ${booking.user.name} solicitou um transfer (${booking.transferBooking?.origin} → ${booking.transferBooking?.destination}). (Reserva #${booking.id})`,
-            'NEW_BOOKING'
-        );
-
-        return booking;
-    }
 
     async findAllAdmin(query: {
         status?: BookingStatus;
         statuses?: string; // Comma separated list of statuses
-        type?: BookingType;
         startDate?: string;
         endDate?: string;
         sortBy?: string;
@@ -144,7 +89,7 @@ export class BookingsService {
     }) {
         const page = Number(query.page) || 1;
         const limit = Number(query.limit) || 20;
-        const { status, statuses, type, startDate, endDate, sortBy } = query;
+        const { status, statuses, startDate, endDate, sortBy } = query;
         const where: any = {};
 
         // Status Filtering
@@ -156,9 +101,6 @@ export class BookingsService {
         } else if (status) {
             where.status = status;
         }
-
-        // Type Filtering
-        if (type) where.type = type;
 
         // Date Filtering
         if (startDate || endDate) {
@@ -187,7 +129,7 @@ export class BookingsService {
                 include: {
                     user: { select: { id: true, name: true, email: true, phone: true } },
                     vehicleBooking: { include: { vehicle: { include: { images: true } } } },
-                    transferBooking: { include: { service: true } },
+
                     payment: true,
                 },
                 skip: (page - 1) * limit,
@@ -203,18 +145,7 @@ export class BookingsService {
         };
     }
 
-    async setTransferPrice(id: number, price: number) {
-        const booking = await this.findOne(id);
-        if (booking.type !== BookingType.TRANSFER) {
-            throw new BadRequestException('Apenas reservas de transfer podem ter o preço redefinido.');
-        }
 
-        return this.prisma.booking.update({
-            where: { id },
-            data: { totalPrice: price },
-            include: { user: { select: { id: true, name: true, email: true, phone: true } } }
-        });
-    }
 
     async findByUser(userId: number, options?: { archived?: boolean }) {
         const fetchArchived = options?.archived ?? false;
@@ -222,7 +153,7 @@ export class BookingsService {
             where: { userId, clientArchived: fetchArchived },
             include: {
                 vehicleBooking: { include: { vehicle: { include: { images: true } } } },
-                transferBooking: { include: { service: true } },
+
                 payment: true,
             },
             orderBy: { createdAt: 'desc' },
@@ -330,7 +261,7 @@ export class BookingsService {
             include: {
                 user: { select: { id: true, name: true, email: true, phone: true } },
                 vehicleBooking: { include: { vehicle: { include: { images: true } } } },
-                transferBooking: { include: { service: true } },
+
                 payment: true,
             },
         });
@@ -417,7 +348,7 @@ export class BookingsService {
             include: {
                 user: { select: { id: true, name: true, email: true, phone: true } },
                 vehicleBooking: { include: { vehicle: { include: { images: true } } } },
-                transferBooking: { include: { service: true } },
+
                 payment: true,
             },
         });

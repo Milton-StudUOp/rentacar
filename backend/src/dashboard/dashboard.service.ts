@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { BookingStatus, BookingType } from '@prisma/client';
+import { BookingStatus } from '@prisma/client';
 
 @Injectable()
 export class DashboardService {
@@ -38,8 +38,6 @@ export class DashboardService {
             totalClients,
             totalRevenue,
             recentBookings,
-            vehicleBookings,
-            transferBookings,
             globalPendingBookings,
         ] = await Promise.all([
             this.prisma.booking.count({ where: dateFilter }),
@@ -63,11 +61,8 @@ export class DashboardService {
                 include: {
                     user: { select: { name: true, email: true } },
                     vehicleBooking: { include: { vehicle: { include: { images: true } } } },
-                    transferBooking: { select: { origin: true, destination: true } },
                 },
             }),
-            this.prisma.booking.count({ where: { type: BookingType.VEHICLE, ...dateFilter } }),
-            this.prisma.booking.count({ where: { type: BookingType.TRANSFER, ...dateFilter } }),
             this.prisma.booking.count({ where: { status: BookingStatus.PENDING } }),
         ]);
 
@@ -84,7 +79,6 @@ export class DashboardService {
             totalClients,
             totalRevenue: totalRevenue._sum.totalPrice || 0,
             recentBookings,
-            bookingsByType: { vehicle: vehicleBookings, transfer: transferBookings },
             globalPendingBookings,
         };
     }

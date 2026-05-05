@@ -116,55 +116,35 @@ export default function AdminCorporateRequests() {
             </div>
 
             {/* Quick Stats & Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div onClick={() => setStatusFilter('ALL')} className={`cursor-pointer group p-5 rounded-2xl border transition-all duration-300 ${statusFilter === 'ALL' ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 hover:border-indigo-500/30'}`}>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Todos</p>
-                    <div className="flex items-end justify-between mt-2">
-                        <p className="text-3xl font-black text-slate-900 dark:text-white">{requests?.length || 0}</p>
-                        <Building2 className={`w-8 h-8 ${statusFilter === 'ALL' ? 'text-indigo-400' : 'text-slate-300 dark:text-slate-700'} opacity-50 group-hover:scale-110 transition-transform`} />
-                    </div>
-                </div>
-                <div onClick={() => setStatusFilter('PENDING')} className={`cursor-pointer group p-5 rounded-2xl border transition-all duration-300 ${statusFilter === 'PENDING' ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 hover:border-amber-500/30'}`}>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pendentes</p>
-                    <div className="flex items-end justify-between mt-2">
-                        <p className="text-3xl font-black text-slate-900 dark:text-white">{requests?.filter((r: CorporateRequest) => r.status === 'PENDING').length || 0}</p>
-                        <Loader2 className={`w-8 h-8 ${statusFilter === 'PENDING' ? 'text-amber-400' : 'text-slate-300 dark:text-slate-700'} opacity-50 group-hover:scale-110 transition-transform`} />
-                    </div>
-                </div>
-
-                <div onClick={() => setStatusFilter('QUOTED')} className={`cursor-pointer group p-5 rounded-2xl border transition-all duration-300 ${statusFilter === 'QUOTED' ? 'bg-blue-500/10 border-blue-500/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 hover:border-blue-500/30'}`}>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cotados</p>
-                    <div className="flex items-end justify-between mt-2">
-                        <p className="text-3xl font-black text-slate-900 dark:text-white">{requests?.filter((r: CorporateRequest) => r.status === 'QUOTED').length || 0}</p>
-                        <Mail className={`w-8 h-8 ${statusFilter === 'QUOTED' ? 'text-blue-400' : 'text-slate-300 dark:text-slate-700'} opacity-50 group-hover:scale-110 transition-transform`} />
-                    </div>
-                </div>
-
-                <div onClick={() => setStatusFilter('COMPLETED')} className={`cursor-pointer group p-5 rounded-2xl border transition-all duration-300 ${statusFilter === 'COMPLETED' ? 'bg-green-500/10 border-green-500/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 hover:border-green-500/30'}`}>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Convertidos</p>
-                    <div className="flex items-end justify-between mt-2">
-                        <p className="text-3xl font-black text-slate-900 dark:text-white">{requests?.filter((r: CorporateRequest) => r.status === 'COMPLETED').length || 0}</p>
-                        <Save className={`w-8 h-8 ${statusFilter === 'COMPLETED' ? 'text-green-400' : 'text-slate-300 dark:text-slate-700'} opacity-50 group-hover:scale-110 transition-transform`} />
-                    </div>
-                </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                    { label: 'Todos', count: requests?.length || 0, filter: 'ALL', color: 'brand' },
+                    { label: 'Pendentes', count: requests?.filter((r: CorporateRequest) => r.status === 'PENDING').length || 0, filter: 'PENDING', color: 'amber' },
+                    { label: 'Cotados', count: requests?.filter((r: CorporateRequest) => r.status === 'QUOTED').length || 0, filter: 'QUOTED', color: 'blue' },
+                    { label: 'Convertidos', count: requests?.filter((r: CorporateRequest) => r.status === 'COMPLETED').length || 0, filter: 'COMPLETED', color: 'green' },
+                ].map((stat) => (
+                    <button key={stat.filter} onClick={() => setStatusFilter(stat.filter)}
+                        className={`p-5 rounded-2xl border text-left transition-all cursor-pointer ${
+                            statusFilter === stat.filter
+                                ? 'bg-brand-500/8 border-brand-500/30 shadow-sm'
+                                : 'bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/6 hover:border-brand-500/20'
+                        }`}>
+                        <p className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">{stat.label}</p>
+                        <p className="text-3xl font-black text-gray-900 dark:text-white mt-2">{stat.count}</p>
+                    </button>
+                ))}
             </div>
 
             {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="flex-1 relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                    <input
-                        type="text"
-                        placeholder="Procurar por empresa ou contacto..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-cyan-500 transition-all shadow-sm"
-                    />
-                </div>
+            <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input type="text" placeholder="Procurar por empresa ou contacto..."
+                    value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full max-w-md bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl pl-11 pr-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all" />
             </div>
 
             {/* Data Source Display */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl shadow-xl overflow-hidden transition-colors">
+            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/6 rounded-2xl shadow-sm dark:shadow-none overflow-hidden">
                 <div className="hidden lg:block overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>

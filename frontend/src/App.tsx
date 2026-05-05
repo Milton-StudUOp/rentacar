@@ -5,7 +5,6 @@ import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Vehicles from './pages/Vehicles';
 import VehicleDetail from './pages/VehicleDetail';
-import Transfers from './pages/Transfers';
 import Checkout from './pages/Checkout';
 import MyBookings from './pages/MyBookings';
 import Profile from './pages/Profile';
@@ -13,13 +12,13 @@ import PasswordReset from './pages/PasswordReset';
 import About from './pages/About';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminVehicles from './pages/admin/Vehicles';
-import AdminTransfers from './pages/admin/Transfers';
 import AdminBookings from './pages/admin/Bookings';
 import AdminClients from './pages/admin/Clients';
 import AdminSettings from './pages/admin/Settings';
 import AdminCorporateRequests from './pages/admin/CorporateRequests';
 
 import { ThemeProvider } from './components/ThemeProvider';
+
 
 export default function App() {
   return (
@@ -30,7 +29,6 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/vehicles/:id" element={<VehicleDetail />} />
-          <Route path="/transfers" element={<Transfers />} />
           <Route path="/about" element={<About />} />
           <Route path="/checkout/:type/:id" element={<Checkout />} />
           <Route path="/my-bookings" element={<MyBookings />} />
@@ -40,7 +38,6 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="vehicles" element={<AdminVehicles />} />
-          <Route path="transfers" element={<AdminTransfers />} />
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="clients" element={<AdminClients />} />
           <Route path="corporate" element={<AdminCorporateRequests />} />

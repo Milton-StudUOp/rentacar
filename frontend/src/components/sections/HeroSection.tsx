@@ -1,6 +1,7 @@
-import { motion, useScroll, useTransform, useMotionValue, useSpring, animate, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValue, useSpring, animate } from 'framer-motion';
 import { Bus, ArrowRight, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
 /* ── Animated counter ─────────────────────────────────── */
 function Counter({ target, suffix = '', prefix = '' }: { target: number; suffix?: string; prefix?: string }) {
@@ -60,8 +61,8 @@ function AnimatedTitle({ children }: { children: string }) {
 }
 
 /* ── Magnetic button ──────────────────────────────────── */
-function MagneticButton({ children, href }: { children: React.ReactNode; href: string }) {
-    const ref = useRef<HTMLAnchorElement>(null);
+function MagneticButton({ children, href, className = "" }: { children: React.ReactNode; href?: string; className?: string }) {
+    const ref = useRef<HTMLDivElement>(null);
     const x = useMotionValue(0);
     const y = useMotionValue(0);
     const sx = useSpring(x, { stiffness: 200, damping: 15 });
@@ -74,76 +75,73 @@ function MagneticButton({ children, href }: { children: React.ReactNode; href: s
         y.set((e.clientY - rect.top - rect.height / 2) * 0.35);
     }, [x, y]);
 
-    return (
-        <motion.a
+    const content = (
+        <motion.div
             ref={ref}
-            href={href}
             style={{ x: sx, y: sy }}
             onMouseMove={handleMove}
             onMouseLeave={() => { x.set(0); y.set(0); }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-brand-500 text-white font-bold text-lg glow-red group cursor-pointer select-none"
+            className={`inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-brand-500 text-white font-bold text-lg glow-red cursor-pointer select-none ${className}`}
         >
             {children}
-        </motion.a>
+        </motion.div>
     );
+
+    if (href) {
+        return <Link to={href}>{content}</Link>;
+    }
+    return content;
 }
 
-/* ── Single-car drive-by slideshow ─────────────────────── */
-const carImages = ['/CarOne.webp', '/CarTwo.webp', '/CarThree.webp', '/CarFour.webp'];
+/* ── Vehicle Carousel (CSS transitions, like original) ── */
+const heroVehicles = ['/CarOne.webp', '/CarTwo.webp', '/CarThree.webp', '/CarFour.webp'];
 
-function CarSlideshow() {
-    const [currentCar, setCurrentCar] = useState(0);
+function VehicleCarousel() {
+    const [currentIdx, setCurrentIdx] = useState(0);
 
     useEffect(() => {
-        // Each car takes ~4s to cross, then wait 0.8s before next
-        const interval = setInterval(() => {
-            setCurrentCar(prev => (prev + 1) % carImages.length);
-        }, 4800);
-        return () => clearInterval(interval);
+        const timer = setInterval(() => {
+            setCurrentIdx(prev => (prev + 1) % heroVehicles.length);
+        }, 4000);
+        return () => clearInterval(timer);
     }, []);
 
     return (
-        <div className="relative w-full overflow-hidden h-36 sm:h-44 md:h-52">
-            {/* Road surface line */}
-            <div className="absolute bottom-4 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="relative w-full aspect-video overflow-visible">
+            {/* Subtle glow behind vehicle */}
+            <div className="absolute w-[120%] h-[120%] -left-[10%] -top-[10%] bg-gradient-to-tr from-brand-500/10 to-transparent rounded-full blur-3xl -z-10" />
+            <div className="absolute right-0 top-1/4 w-64 h-64 bg-brand-500/8 rounded-full blur-3xl -z-10" />
 
-            {/* Animated dashed road markings */}
-            <div className="absolute bottom-4 left-0 right-0 h-px overflow-hidden">
-                <motion.div
-                    className="h-full w-[200%]"
-                    style={{
-                        backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.3) 30px, transparent 30px, transparent 60px)',
-                    }}
-                    animate={{ x: ['0%', '-50%'] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                />
-            </div>
+            {heroVehicles.map((img, idx) => {
+                let position = 0;
+                if (idx === currentIdx) position = 0;
+                else if (idx === (currentIdx + 1) % heroVehicles.length) position = 1;
+                else if (idx === (currentIdx - 1 + heroVehicles.length) % heroVehicles.length) position = -1;
+                else position = 2;
 
-            {/* Single car at a time, entering right → exiting left */}
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={currentCar}
-                    className="absolute bottom-5 flex items-end justify-center"
-                    initial={{ x: '110vw' }}
-                    animate={{ x: '-40vw' }}
-                    exit={{ x: '-110vw' }}
-                    transition={{
-                        duration: 4,
-                        ease: 'linear',
-                    }}
-                >
-                    {/* Shadow underneath car */}
-                    <div className="absolute -bottom-2 left-[15%] right-[15%] h-5 bg-black/40 rounded-full blur-xl" />
-                    <img
-                        src={carImages[currentCar]}
-                        alt="NovaDrive vehicle"
-                        className="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]"
-                        style={{ filter: 'brightness(1.1) contrast(1.05)' }}
-                    />
-                </motion.div>
-            </AnimatePresence>
+                return (
+                    <div
+                        key={idx}
+                        className="absolute inset-0 w-full transition-all duration-1000 ease-in-out flex items-center justify-center"
+                        style={{
+                            transform: `translateX(${position * 120}%) scale(${position === 0 ? 1.05 : 0.8})`,
+                            opacity: position === 0 ? 1 : 0,
+                            zIndex: position === 0 ? 10 : 0,
+                        }}
+                    >
+                        <img
+                            src={img}
+                            alt="NovaDrive vehicle"
+                            className={`w-[110%] max-w-none object-contain transition-transform duration-[4000ms] ease-linear ${position === 0 ? 'scale-105' : 'scale-100'}`}
+                            style={{
+                                filter: 'drop-shadow(0 25px 30px rgba(0,0,0,0.5)) brightness(1.1) saturate(1.1)',
+                            }}
+                        />
+                    </div>
+                );
+            })}
         </div>
     );
 }
@@ -204,12 +202,12 @@ export default function HeroSection() {
             {/* — Content: two-column layout — */}
             <motion.div
                 style={{ opacity: opacityContent }}
-                className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-24 pb-8 transform-gpu"
+                className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 min-h-[80vh] flex items-center transform-gpu"
             >
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end w-full">
 
                     {/* Left column: text content */}
-                    <div>
+                    <div className="max-w-2xl">
                         {/* Badge */}
                         <motion.div
                             initial={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -223,7 +221,7 @@ export default function HeroSection() {
                         </motion.div>
 
                         {/* Headline */}
-                        <h1 className="text-5xl sm:text-7xl lg:text-7xl xl:text-8xl font-heading font-black leading-[1.0] text-white mb-8 perspective-[1200px]">
+                        <h1 className="text-5xl sm:text-5xl lg:text-5xl xl:text-6xl font-heading font-black leading-[1.0] text-white mb-8 perspective-[1200px]">
                             <AnimatedTitle>Soluções de</AnimatedTitle>{' '}
                             <motion.span
                                 className="inline-block text-brand-500"
@@ -255,29 +253,28 @@ export default function HeroSection() {
                             transition={{ duration: 0.7, delay: 1.1 }}
                             className="flex flex-wrap gap-4"
                         >
-                            <MagneticButton href="#contacto">
+                            <MagneticButton href="/vehicles" className="group">
                                 Pedir Proposta Comercial
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
                             </MagneticButton>
 
-                            <motion.a
-                                href="#frota"
-                                whileHover={{ scale: 1.03, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                                className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-white/5 border border-white/15 text-white font-semibold text-lg backdrop-blur-sm cursor-pointer"
+                            <Link
+                                to="/vehicles"
+                                className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-white/5 border border-white/15 text-white font-semibold text-lg backdrop-blur-sm cursor-pointer hover:scale-[1.03] hover:bg-white/10 transition-all"
                             >
                                 Ver Frota
-                            </motion.a>
+                            </Link>
                         </motion.div>
                     </div>
 
-                    {/* Right column: car drive-by */}
+                    {/* Right column: vehicle carousel */}
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1, delay: 1.2 }}
-                        className="hidden lg:block relative"
+                        initial={{ opacity: 0, x: 60 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] as any }}
+                        className="hidden lg:block relative w-full mb-4"
                     >
-                        <CarSlideshow />
+                        <VehicleCarousel />
                     </motion.div>
                 </div>
             </motion.div>
@@ -291,7 +288,7 @@ export default function HeroSection() {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 1.8 }}
-                    className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/8 rounded-2xl overflow-hidden border border-white/10 mt-10"
+                    className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/8 rounded-2xl overflow-hidden border border-white/10 mt-4"
                 >
                     {kpis.map((kpi, i) => (
                         <div key={i} className="bg-white/[0.04] backdrop-blur-sm px-6 py-7 hover:bg-white/[0.08] transition-colors duration-300 text-center">

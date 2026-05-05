@@ -12,7 +12,7 @@ export default function Footer() {
                         <p className="text-white font-bold text-lg">Resposta garantida em 48 horas úteis.</p>
                     </div>
                     <Link
-                        to="/about"
+                        to="/vehicles"
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-brand-500 font-bold text-sm hover:bg-charcoal-50 transition-all group shadow-lg"
                     >
                         Pedir Proposta

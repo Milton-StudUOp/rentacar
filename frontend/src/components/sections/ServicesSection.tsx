@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { CalendarDays, Building2, Sparkles, ChevronRight, Briefcase, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const services = [
     {
@@ -100,12 +101,12 @@ function ServiceCard({ s, index }: { s: typeof services[0]; index: number }) {
                         ))}
                     </ul>
 
-                    <motion.button
-                        whileHover={{ x: 4 }}
-                        className="inline-flex items-center gap-2 mt-8 text-sm font-semibold text-brand-500 hover:text-brand-400 transition-colors"
+                    <Link
+                        to="/about"
+                        className="inline-flex items-center gap-2 mt-8 text-sm font-semibold text-brand-500 hover:text-brand-400 transition-colors group"
                     >
-                        Saber mais <ArrowRight className="w-3.5 h-3.5" />
-                    </motion.button>
+                        Saber mais <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                 </div>
             </div>
         </motion.div>

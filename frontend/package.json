@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist -b novaDrive_V1.0 -f"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

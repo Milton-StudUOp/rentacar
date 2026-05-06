@@ -47,7 +47,9 @@ export default function TechSection() {
     return (
         <section className="relative py-32 overflow-hidden">
             {/* Background image */}
-            <div className="absolute inset-0 bg-[url('/tech-gps.png')] bg-cover bg-center opacity-[0.15] mix-blend-luminosity" />
+            <div className="absolute inset-0 bg-cover bg-center opacity-[0.15] mix-blend-luminosity" 
+                style={{ backgroundImage: `url(${import.meta.env.BASE_URL}tech-gps.png)` }}
+            />
 
             {/* Deep dark gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#060608]/90 via-[#0d060a]/80 to-[#060608]/90" />

@@ -43,6 +43,7 @@ export default function App() {
           <Route path="corporate" element={<AdminCorporateRequests />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
+        <Route path="*" element={<div className="p-20 text-center">404 - Not Found (Current path: {window.location.pathname})</div>} />
       </Routes>
     </ThemeProvider>
   );

@@ -9,47 +9,47 @@ const fleet = [
         category: 'Van Premium',
         capacity: '8–12',
         ideal: 'Executivos · Rotas urbanas',
-        img: '/vehicle-hiace.png',
+        img: '/rentacar/vehicle-hiace.png',
         badge: 'Popular',
         badgeColor: 'bg-brand-500',
         specs: { Motor: 'Diesel 2.8L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Semestral' },
     },
     {
         name: 'VW Transporter',
-        category: 'Van Premium',
-        capacity: '8–12',
-        ideal: 'Executivos · Aeroporto',
-        img: '/vehicle-transporter.png',
+        category: 'Van Executiva',
+        capacity: '8–9',
+        ideal: 'Transferes · Viagens VIP',
+        img: '/rentacar/vehicle-transporter.png',
         badge: 'Destaque',
         badgeColor: 'bg-amber-500',
         specs: { Motor: 'Diesel 2.0L TDI', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Semestral' },
     },
     {
         name: 'Nissan NV350',
-        category: 'Van Operacional',
-        capacity: '8–12',
-        ideal: 'Operações · Indústria',
-        img: '/vehicle-nv350.png',
+        category: 'Mini-Bus Standard',
+        capacity: '14–16',
+        ideal: 'Transporte pessoal · Escolar',
+        img: '/rentacar/vehicle-nv350.png',
         badge: null,
         badgeColor: '',
         specs: { Motor: 'Diesel 2.5L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Semestral' },
     },
     {
         name: 'Toyota Coaster',
-        category: 'Minibus Médio',
-        capacity: '14–18',
-        ideal: 'Grandes equipas · Mineração',
-        img: '/vehicle-coaster.png',
+        category: 'Bus Médio',
+        capacity: '22–26',
+        ideal: 'Grupos médios · Turismo',
+        img: '/rentacar/vehicle-coaster.png',
         badge: 'Elite',
         badgeColor: 'bg-purple-600',
         specs: { Motor: 'Diesel 4.2L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Trimestral' },
     },
     {
-        name: 'Rosa Bus',
-        category: 'Minibus Médio',
-        capacity: '14–18',
-        ideal: 'Grandes equipas · Mineração',
-        img: '/vehicle-rosa.png',
+        name: 'Mitsubishi Rosa',
+        category: 'Bus Médio Premium',
+        capacity: '22–30',
+        ideal: 'Viagens interprovinciais',
+        img: '/rentacar/vehicle-rosa.png',
         badge: null,
         badgeColor: '',
         specs: { Motor: 'Diesel 4.9L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Trimestral' },
@@ -59,14 +59,14 @@ const fleet = [
         category: 'Minibus Capacidade',
         capacity: '14–18',
         ideal: 'Logística · Grandes rotas',
-        img: '/vehicle-iveco.png',
+        img: '/rentacar/vehicle-iveco.png',
         badge: null,
         badgeColor: '',
         specs: { Motor: 'Diesel 3.0L', 'Ar Cond.': 'Sim', Cintos: 'Todos', GPS: 'Sim', Manutenção: 'Trimestral' },
     },
 ];
 
-const categories = ['Todos', 'Van Premium', 'Van Operacional', 'Minibus Médio', 'Minibus Capacidade'];
+const categories = ['Todos', 'Van Premium', 'Van Executiva', 'Mini-Bus Standard', 'Bus Médio', 'Bus Médio Premium', 'Minibus Capacidade'];
 
 type Vehicle = typeof fleet[0];
 
@@ -246,7 +246,7 @@ export default function FleetSection() {
                         Nossa Frota
                     </div>
                     <h2 className="text-4xl sm:text-5xl font-heading font-black text-charcoal-900 dark:text-white mb-4">
-                        Viaturas <span className="text-brand-500">de Elite</span>
+                        Viaturas <span className="text-brand-500">de Elite</span> {/* Build: 2026-05-06 10:56 */}
                     </h2>
                     <p className="text-charcoal-500 dark:text-charcoal-400 text-lg font-light max-w-xl mx-auto">
                         Frota curada para máxima segurança, conforto e imagem corporativa de excelência

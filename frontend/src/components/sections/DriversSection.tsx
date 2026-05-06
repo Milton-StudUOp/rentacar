@@ -136,7 +136,7 @@ export default function DriversSection() {
                         <div className="absolute -inset-4 bg-gradient-to-tr from-brand-500/10 via-transparent to-transparent rounded-3xl blur-2xl" />
                         <div className="relative rounded-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.15)] border border-charcoal-100/50 dark:border-white/5">
                             <img
-                                src="/drivers-team.png"
+                                src={`${import.meta.env.BASE_URL}drivers-team.png`}
                                 alt="Equipa de motoristas NovaDrive"
                                 className="w-full h-[520px] object-cover"
                             />

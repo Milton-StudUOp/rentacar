@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bus, Users, X, ChevronRight, CheckCircle2, Gauge, Zap } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const fleet = [
     {
@@ -201,15 +202,13 @@ function VehicleModal({ v, onClose }: { v: Vehicle; onClose: () => void }) {
                             Ideal para: <span className="font-medium">{v.ideal}</span>
                         </div>
 
-                        <motion.a
-                            href="#contacto"
+                        <Link
+                            to="/vehicles"
                             onClick={onClose}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
                             className="block w-full py-3.5 rounded-2xl bg-brand-500 text-white font-bold text-sm text-center hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/25"
                         >
                             Solicitar Proposta para este Veículo
-                        </motion.a>
+                        </Link>
                     </div>
                 </motion.div>
             </motion.div>

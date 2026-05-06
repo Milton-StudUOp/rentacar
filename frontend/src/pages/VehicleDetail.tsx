@@ -164,7 +164,7 @@ export default function VehicleDetail() {
                                     className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border-2 border-gray-200 dark:border-white/12 bg-transparent text-gray-800 dark:text-white font-bold hover:border-brand-500/40 hover:bg-brand-500/5 transition-all"
                                 >
                                     <Building2 className="w-4 h-4 text-brand-500" />
-                                    Aluguer Empresarial (B2B)
+                                    Solicitar Proposta para este Veículo
                                 </button>
                             </div>
 

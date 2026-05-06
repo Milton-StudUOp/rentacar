@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none">
+  <rect width="44" height="44" x="2" y="2" rx="10" fill="#C8102E"/>
+  <path d="M14 28L22 16H26L18 28H30L22 40H18L26 28H14Z" fill="white"/>
+  <text x="56" y="20" font-family="Inter, Montserrat, sans-serif" font-weight="800" font-size="18" fill="#FFFFFF">
+    NovaDrive
+  </text>
+  <text x="56" y="38" font-family="Inter, Montserrat, sans-serif" font-weight="400" font-size="10" fill="rgba(255,255,255,0.6)" letter-spacing="3">
+    RENT-A-CAR
+  </text>
+</svg>

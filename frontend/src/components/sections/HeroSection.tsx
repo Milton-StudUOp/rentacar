@@ -98,10 +98,17 @@ function MagneticButton({ children, href, className = "" }: { children: React.Re
 
 /* ── Vehicle Carousel (CSS transitions, like original) ── */
 const heroVehicles = [
+<<<<<<< HEAD
     getPublicUrl('/CarOne.webp'),
     getPublicUrl('/CarTwo.webp'),
     getPublicUrl('/CarThree.webp'),
     getPublicUrl('/CarFour.webp')
+=======
+    `${import.meta.env.BASE_URL}CarOne.webp`, 
+    `${import.meta.env.BASE_URL}CarTwo.webp`, 
+    `${import.meta.env.BASE_URL}CarThree.webp`, 
+    `${import.meta.env.BASE_URL}CarFour.webp`
+>>>>>>> b60c606cc6b6be6dbceba21104d2650bce2badfd
 ];
 
 function VehicleCarousel() {
@@ -178,8 +185,13 @@ export default function HeroSection() {
             {/* — Background layers — */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0c] via-[#0f0a0e] to-[#0a0a0c]" />
             <motion.div
+<<<<<<< HEAD
                 style={{ y: yBg, scale: scaleBg, backgroundImage: `url(${getPublicUrl('/hero-fleet.png')})` }}
                 className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity transform-gpu will-change-transform"
+=======
+                style={{ y: yBg, scale: scaleBg, backgroundImage: `url(${import.meta.env.BASE_URL}hero-fleet.png)` }}
+                className="absolute inset-0 bg-cover bg-center mix-blend-luminosity opacity-10 pointer-events-none" 
+>>>>>>> b60c606cc6b6be6dbceba21104d2650bce2badfd
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/50 to-transparent" />
 

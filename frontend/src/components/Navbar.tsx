@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from './ThemeProvider';
-import { Bus, Menu, X, User, LogOut, LayoutDashboard, Sun, Moon } from 'lucide-react';
+import { Menu, X, User, LogOut, LayoutDashboard, Sun, Moon } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Navbar() {
@@ -24,11 +24,13 @@ export default function Navbar() {
         <nav className="sticky top-0 z-50 bg-white/90 dark:bg-charcoal-950/90 backdrop-blur-md border-b border-charcoal-200 dark:border-white/5 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
-                    {/* Logo */}
+                    {/* Logo - Updated: 2026-05-06 12:08 */}
                     <Link to="/" className="flex items-center gap-2.5 group">
-                        <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/40 transition-all duration-300 group-hover:scale-105">
-                            <Bus className="w-5 h-5 text-white" />
-                        </div>
+                        <img 
+                            src={isDark ? '/rentacar/red_novadrive_logo.jpg' : '/rentacar/white_novadrive_logo.jpg'}
+                            alt="NovaDrive Logo"
+                            className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-brand-500/10 group-hover:shadow-brand-500/30 transition-all duration-300 group-hover:scale-105"
+                        />
                         <div className="hidden sm:flex flex-col leading-none">
                             <span className="text-lg font-extrabold text-charcoal-900 dark:text-white tracking-tight transition-colors">
                                 NovaDrive

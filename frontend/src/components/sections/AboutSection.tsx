@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Eye, Target, Gem, Quote, ArrowUpRight } from 'lucide-react';
+import { Eye, Target, Gem, Quote, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import React from 'react';
 import { getPublicUrl } from '../../utils/assetUrl';
 
@@ -89,7 +90,11 @@ export default function AboutSection() {
                         <div className="absolute -inset-4 bg-gradient-to-br from-brand-500/20 via-transparent to-transparent rounded-3xl blur-2xl" />
                         <div className="relative rounded-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.2)] border border-white/10">
                             <img
+<<<<<<< HEAD
                                 src={getPublicUrl('/about-driver.png')}
+=======
+                                src={`${import.meta.env.BASE_URL}about-driver.png`}
+>>>>>>> b60c606cc6b6be6dbceba21104d2650bce2badfd
                                 alt="Motorista NovaDrive"
                                 className="w-full h-[520px] object-cover"
                             />
@@ -170,15 +175,16 @@ export default function AboutSection() {
                         </motion.div>
 
                         {/* CTA link */}
-                        <motion.a
+                        <motion.div
                             variants={fadeUp}
-                            href="/about"
-                            whileHover={{ x: 4 }}
-                            className="inline-flex items-center gap-2 text-brand-500 font-semibold text-sm hover:gap-3 transition-all duration-300"
                         >
-                            Conhecer a nossa história completa
-                            <ArrowUpRight className="w-4 h-4" />
-                        </motion.a>
+                            <Link
+                                to="/about"
+                                className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-charcoal-900 dark:bg-white text-white dark:text-charcoal-900 font-bold text-lg hover:scale-105 transition-all duration-300"
+                            >
+                                Saber mais <ArrowRight className="w-5 h-5" />
+                            </Link>
+                        </motion.div>
                     </motion.div>
                 </div>
             </div>

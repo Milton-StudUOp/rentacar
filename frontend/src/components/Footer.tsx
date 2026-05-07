@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Bus, Phone, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
 
 export default function Footer() {
     return (
@@ -24,12 +24,14 @@ export default function Footer() {
             {/* Main Footer */}
             <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                    {/* Brand */}
+                    {/* Brand - Updated: 2026-05-06 12:08 */}
                     <div className="lg:col-span-1">
                         <Link to="/" className="flex items-center gap-2.5 mb-6 group">
-                            <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/40 transition-shadow">
-                                <Bus className="w-5 h-5 text-white" />
-                            </div>
+                            <img 
+                                src="/rentacar/red_novadrive_logo.jpg"
+                                alt="NovaDrive Logo"
+                                className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-black/20 group-hover:shadow-brand-500/20 transition-all duration-300 group-hover:scale-105"
+                            />
                             <div className="flex flex-col leading-none">
                                 <span className="text-lg font-extrabold text-white tracking-tight">
                                     NovaDrive

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FileText, UserCog, Wrench, FileCheck, ShieldAlert, CalendarCheck, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const features = [
     { icon: FileText, title: 'Relatório Mensal de Operação', desc: 'Pontualidade, quilometragem, viagens e ocorrências por rota e viatura em dashboard exclusivo' },
@@ -151,13 +152,12 @@ export default function ManagementSection() {
                         >
                             Falar com um Consultor <ArrowRight className="w-5 h-5" />
                         </motion.a>
-                        <motion.a
-                            href="/vehicles"
-                            whileHover={{ scale: 1.04 }}
+                        <Link
+                            to="/vehicles"
                             className="inline-flex items-center gap-2 px-9 py-4 rounded-2xl bg-white dark:bg-white/5 border border-charcoal-200 dark:border-white/10 text-charcoal-700 dark:text-white font-semibold text-lg hover:border-brand-500/30 transition-all"
                         >
                             Explorar Frota
-                        </motion.a>
+                        </Link>
                     </div>
                 </motion.div>
             </div>

@@ -61,7 +61,11 @@ export default function About() {
             <div className="relative min-h-[70vh] flex items-center justify-center pt-24 pb-20 overflow-hidden bg-white dark:bg-transparent transition-colors duration-300">
                 {/* Background layers */}
                 <motion.div 
+<<<<<<< HEAD
                     style={{ y: yBg, opacity: opacityBg, backgroundImage: `url(${getPublicUrl('/hero-fleet.png')})` }}
+=======
+                    style={{ y: yBg, opacity: opacityBg, backgroundImage: `url(${import.meta.env.BASE_URL}hero-fleet.png)` }}
+>>>>>>> b60c606cc6b6be6dbceba21104d2650bce2badfd
                     className="absolute inset-0 bg-cover bg-center mix-blend-luminosity dark:mix-blend-luminosity opacity-10 dark:opacity-25 pointer-events-none"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 via-white/90 to-slate-50 dark:from-[#0a0a0c]/80 dark:via-[#0a0a0c]/90 dark:to-[#0a0a0c] pointer-events-none transition-colors duration-300" />
@@ -116,7 +120,11 @@ export default function About() {
                     {/* Image / 3D Car floating */}
                     <motion.div variants={fadeUp} className="relative h-[400px] lg:h-[500px] flex items-center justify-center">
                         <motion.img 
+<<<<<<< HEAD
                             src={getPublicUrl('/CarThree.webp')} 
+=======
+                            src={`${import.meta.env.BASE_URL}CarThree.webp`} 
+>>>>>>> b60c606cc6b6be6dbceba21104d2650bce2badfd
                             alt="Conceito NovaDrive" 
                             className="w-[120%] max-w-none object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.3)] dark:drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)] relative z-10 transition-all duration-300"
                             animate={{ y: [-10, 10, -10] }}
@@ -235,7 +243,13 @@ export default function About() {
                     
                     {/* Background CTA */}
                     <div className="absolute inset-0 bg-white dark:bg-gradient-to-br dark:from-[#121215] dark:to-[#1a1214] transition-colors duration-300" />
+<<<<<<< HEAD
                     <div className="absolute inset-0 bg-cover bg-center opacity-5 dark:opacity-10 mix-blend-luminosity" style={{ backgroundImage: `url(${getPublicUrl('/hero-fleet.png')})` }} />
+=======
+                    <div className="absolute inset-0 bg-cover bg-center opacity-5 dark:opacity-10 mix-blend-luminosity" 
+                        style={{ backgroundImage: `url(${import.meta.env.BASE_URL}hero-fleet.png)` }}
+                    />
+>>>>>>> b60c606cc6b6be6dbceba21104d2650bce2badfd
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/10 dark:bg-brand-500/20 rounded-full blur-[100px] pointer-events-none transition-colors duration-300" />
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-500/5 dark:bg-brand-500/10 rounded-full blur-[80px] pointer-events-none transition-colors duration-300" />
                     

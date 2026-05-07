@@ -17,6 +17,9 @@ const queryClient = new QueryClient({
   },
 })
 
+console.log('BASE_URL:', import.meta.env.BASE_URL);
+console.log('Pathname:', window.location.pathname);
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
